@@ -186,7 +186,11 @@ void KobukiRos::publishUltrasonic()
 {
   if ( ros::ok() && (raw_ultrasonic_data_publisher.getNumSubscribers() > 0) )
   {
+      // sensor_msgs::ImuPtr msg(new sensor_msgs::Imu);
       Ultrasonic::Data data = kobuki.getUltrasonicData();
+      unsigned int length = data.followed_data_length/3;
+      ros::Time now = ros::Time::now();
+      ros::Duration interval(0.1); // Time interval between each sensor reading.
       // raw_ultrasonic_data_publisher.publish(msg);
   }
 }
