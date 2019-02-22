@@ -34,3 +34,8 @@ odom_frame: odom
 
 # Name of the base TF frame  (string, default: base_footprint)
 base_frame: base_footprint
+
+#自定义参数
+pointcloud_height: 0.1
+#超声波排布角度,排布将影响计算方式，请核对代码计算方式
+pointcloud_angle: 20

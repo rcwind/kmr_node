@@ -38,6 +38,7 @@
 *****************************************************************************/
 
 #include "kobuki_node/kobuki_ros.hpp"
+#include <sensor_msgs/PointCloud2.h>
 
 /*****************************************************************************
  ** Namespaces
@@ -184,14 +185,68 @@ void KobukiRos::publishRawInertia()
 
 void KobukiRos::publishUltrasonic()
 {
+    Ultrasonic::Data data = kobuki.getUltrasonicData();
+    unsigned int length = data.followed_data_length;
+    unsigned short *ult_data = &data.data;
+    // raw data
   if ( ros::ok() && (raw_ultrasonic_data_publisher.getNumSubscribers() > 0) )
   {
-      // sensor_msgs::ImuPtr msg(new sensor_msgs::Imu);
-      Ultrasonic::Data data = kobuki.getUltrasonicData();
-      unsigned int length = data.followed_data_length/3;
-      ros::Time now = ros::Time::now();
-      ros::Duration interval(0.1); // Time interval between each sensor reading.
       // raw_ultrasonic_data_publisher.publish(msg);
+  }
+  // point cloud
+  if (ros::ok() && utralsonic_cloud_publisher.getNumSubscribers() > 0)
+  {
+      ros::NodeHandle nh = this->getPrivateNodeHandle();
+
+      std::string base_link_frame;
+      double pointcloud_height, angle;
+      nh.param("pointcloud_height", pointcloud_height, 0.04);  // kobuki_node base.yaml文件定义
+      nh.param("pointcloud_angle", angle, 30); 
+      nh.param<std::string>("base_frame", base_link_frame, "/base_link");
+
+      anlge = angle / 180.f * 3.1415926;
+
+      sensor_msgs::PointCloud2 pointcloud;
+      pointcloud.header.stamp = ros::Time::now();
+      pointcloud.header.frame_id = base_link_frame;
+      pointcloud.width  = length;
+      pointcloud.height = 1;
+      pointcloud.fields.resize(3);
+
+      // Set x/y/z as the only fields
+      pointcloud.fields[0].name = "x";
+      pointcloud.fields[1].name = "y";
+      pointcloud.fields[2].name = "z";
+
+      int offset = 0;
+      // All offsets are *4, as all field data types are float32
+      for (size_t d = 0; d < pointcloud.fields.size(); ++d, offset += 4)
+      {
+          pointcloud.fields[d].count    = 1;
+          pointcloud.fields[d].offset   = offset;
+          pointcloud.fields[d].datatype = sensor_msgs::PointField::FLOAT32;
+      }
+
+      pointcloud.point_step = offset;
+      pointcloud.row_step   = pointcloud.point_step * pointcloud.width;
+
+      pointcloud.data.resize(length * pointcloud.point_step);
+      pointcloud.is_bigendian = false;
+      pointcloud.is_dense     = true;
+
+      for (int i = 0; i < length; ++i) 
+      {
+          float x, y, distance;
+          distance = ult_data[i] / 1000.f; // mm -> m
+          // 超声波模块的排布顺序和数据顺序都会影响计算xy的值，请根据实际情况来该
+          x = sin(angle) * distance;
+          y = cos(angle) * distance;
+          memcpy(&pointcloud_.data[i * pointcloud_.point_step + pointcloud_.fields[0].offset], &x, sizeof(float));//x
+          memcpy(&pointcloud_.data[i * pointcloud_.point_step + pointcloud_.fields[1].offset], &y, sizeof(float));//y
+          memcpy(&pointcloud_.data[i * pointcloud_.point_step + pointcloud_.fields[2].offset], &pointcloud_height, sizeof(float));//z
+      }
+
+      ultrasonic_cloud_publisher.publish(pointcloud);
   }
 }
 
