@@ -41,6 +41,7 @@
 #include <ecl/streams/string_stream.hpp>
 #include <kobuki_msgs/VersionInfo.h>
 #include "kobuki_node/kobuki_ros.hpp"
+#include <sensor_msgs/PointCloud2.h>
 
 /*****************************************************************************
  ** Namespaces
@@ -103,6 +104,7 @@ KobukiRos::~KobukiRos()
 
 bool KobukiRos::init(ros::NodeHandle& nh, ros::NodeHandle& nh_pub)
 {
+  node_handle = &nh;
   /*********************
    ** Communications
    **********************/
@@ -324,7 +326,7 @@ void KobukiRos::advertiseTopics(ros::NodeHandle& nh)
   imu_data_publisher = nh.advertise < sensor_msgs::Imu > ("sensors/imu_data", 100);
   raw_imu_data_publisher = nh.advertise < sensor_msgs::Imu > ("sensors/imu_data_raw", 100);
   raw_ultrasonic_data_publisher = nh.advertise < sensor_msgs::Imu > ("sensors/ultrasonic_data_raw", 100);
-  ultrasonic_cloud_publisher = nh.advertise<sensor_msgs::PointCloud2> ("sensors/ultrasonic_pointcloud", 100)
+  ultrasonic_cloud_publisher = nh.advertise<sensor_msgs::PointCloud2> ("sensors/ultrasonic_pointcloud", 100);
   raw_data_command_publisher = nh.advertise< std_msgs::String > ("debug/raw_data_command", 100);
   raw_data_stream_publisher = nh.advertise< std_msgs::String > ("debug/raw_data_stream", 100);
   raw_control_command_publisher = nh.advertise< std_msgs::Int16MultiArray > ("debug/raw_control_command", 100);

@@ -94,6 +94,7 @@ private:
   /*********************
    ** Variables
    **********************/
+  ros::NodeHandle *node_handle;
   std::string name; // name of the ROS node
   Kobuki kobuki;
   sensor_msgs::JointState joint_states;

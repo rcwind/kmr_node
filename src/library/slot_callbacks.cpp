@@ -187,24 +187,21 @@ void KobukiRos::publishUltrasonic()
 {
     Ultrasonic::Data data = kobuki.getUltrasonicData();
     unsigned int length = data.followed_data_length;
-    unsigned short *ult_data = &data.data;
     // raw data
   if ( ros::ok() && (raw_ultrasonic_data_publisher.getNumSubscribers() > 0) )
   {
       // raw_ultrasonic_data_publisher.publish(msg);
   }
   // point cloud
-  if (ros::ok() && utralsonic_cloud_publisher.getNumSubscribers() > 0)
+  if (ros::ok() && ultrasonic_cloud_publisher.getNumSubscribers() > 0)
   {
-      ros::NodeHandle nh = this->getPrivateNodeHandle();
-
       std::string base_link_frame;
       double pointcloud_height, angle;
-      nh.param("pointcloud_height", pointcloud_height, 0.04);  // kobuki_node base.yaml文件定义
-      nh.param("pointcloud_angle", angle, 30); 
-      nh.param<std::string>("base_frame", base_link_frame, "/base_link");
+      node_handle->param("pointcloud_height", pointcloud_height, 0.04);  // kobuki_node base.yaml文件定义
+      node_handle->param("pointcloud_angle", angle, 30.0); 
+      node_handle->param<std::string>("base_frame", base_link_frame, "/base_link");
 
-      anlge = angle / 180.f * 3.1415926;
+      angle = angle / 180.f * 3.1415926;
 
       sensor_msgs::PointCloud2 pointcloud;
       pointcloud.header.stamp = ros::Time::now();
@@ -237,13 +234,13 @@ void KobukiRos::publishUltrasonic()
       for (int i = 0; i < length; ++i) 
       {
           float x, y, distance;
-          distance = ult_data[i] / 1000.f; // mm -> m
+          distance = data.data[i] / 1000.f; // mm -> m
           // 超声波模块的排布顺序和数据顺序都会影响计算xy的值，请根据实际情况来该
           x = sin(angle) * distance;
           y = cos(angle) * distance;
-          memcpy(&pointcloud_.data[i * pointcloud_.point_step + pointcloud_.fields[0].offset], &x, sizeof(float));//x
-          memcpy(&pointcloud_.data[i * pointcloud_.point_step + pointcloud_.fields[1].offset], &y, sizeof(float));//y
-          memcpy(&pointcloud_.data[i * pointcloud_.point_step + pointcloud_.fields[2].offset], &pointcloud_height, sizeof(float));//z
+          memcpy(&pointcloud.data[i * pointcloud.point_step + pointcloud.fields[0].offset], &x, sizeof(float));//x
+          memcpy(&pointcloud.data[i * pointcloud.point_step + pointcloud.fields[1].offset], &y, sizeof(float));//y
+          memcpy(&pointcloud.data[i * pointcloud.point_step + pointcloud.fields[2].offset], &pointcloud_height, sizeof(float));//z
       }
 
       ultrasonic_cloud_publisher.publish(pointcloud);
