@@ -196,12 +196,15 @@ void KobukiRos::publishUltrasonic()
   if (ros::ok() && ultrasonic_cloud_publisher.getNumSubscribers() > 0)
   {
       std::string base_link_frame;
-      double pointcloud_height, angle;
+      double pointcloud_height, ultrasonic_radius;
+      std::vector<double> angle;
       node_handle->param("pointcloud_height", pointcloud_height, 0.04);  // kobuki_node base.yaml文件定义
-      node_handle->param("pointcloud_angle", angle, 30.0); 
+      node_handle->param("pointcloud_angle", angle, std::vector<double>()); 
+      node_handle->param("ultrasonic_radius", angle, 0.2); 
       node_handle->param<std::string>("base_frame", base_link_frame, "/base_link");
 
-      angle = angle / 180.f * 3.1415926;
+      for(int i = 0; i < angle.size(); i++)
+          angle[i] = angle[i] / 180.f * 3.1415926;
 
       sensor_msgs::PointCloud2 pointcloud;
       pointcloud.header.stamp = ros::Time::now();
@@ -235,9 +238,9 @@ void KobukiRos::publishUltrasonic()
       {
           float x, y, distance;
           distance = data.data[i] / 1000.f; // mm -> m
-          // 超声波模块的排布顺序和数据顺序都会影响计算xy的值，请根据实际情况来该
-          x = sin(angle) * distance;
-          y = cos(angle) * distance;
+          // 超声波模块的排布顺序和数据顺序都会影响计算xy的值，请根据实际情况来改
+          x = sin(angle[i]) * (distance + ultrasonic_radius);
+          y = cos(angle[i]) * (distance + ultrasonic_radius);
           memcpy(&pointcloud.data[i * pointcloud.point_step + pointcloud.fields[0].offset], &x, sizeof(float));//x
           memcpy(&pointcloud.data[i * pointcloud.point_step + pointcloud.fields[1].offset], &y, sizeof(float));//y
           memcpy(&pointcloud.data[i * pointcloud.point_step + pointcloud.fields[2].offset], &pointcloud_height, sizeof(float));//z
