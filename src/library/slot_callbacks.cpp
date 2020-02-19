@@ -200,7 +200,7 @@ void KobukiRos::publishUltrasonic()
       std::vector<double> angle;
       node_handle->param("pointcloud_height", pointcloud_height, 0.04);  // kobuki_node base.yaml文件定义
       node_handle->param("pointcloud_angle", angle, std::vector<double>()); 
-      node_handle->param("ultrasonic_radius", angle, 0.2); 
+      node_handle->param("ultrasonic_radius", ultrasonic_radius, 0.2); 
       node_handle->param<std::string>("base_frame", base_link_frame, "/base_link");
 
       for(int i = 0; i < angle.size(); i++)
