@@ -20,4 +20,4 @@ subscribers:
     topic:       "cmd_vel_safety"
     timeout:     0.2
     priority:    10
-    short_desc:  "Kobuki's safety controller"
+    short_desc:  "Kmr's safety controller"

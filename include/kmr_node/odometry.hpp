@@ -1,5 +1,5 @@
 /**
- * @file /kobuki_node/include/kobuki_node/odometry.hpp
+ * @file /kmr_node/include/kmr_node/odometry.hpp
  *
  * @brief File comment
  *
@@ -10,8 +10,8 @@
 ** Ifdefs
 *****************************************************************************/
 
-#ifndef KOBUKI_NODE_ODOMETRY_HPP_
-#define KOBUKI_NODE_ODOMETRY_HPP_
+#ifndef KMR_NODE_ODOMETRY_HPP_
+#define KMR_NODE_ODOMETRY_HPP_
 
 /*****************************************************************************
 ** Includes
@@ -27,14 +27,14 @@
 ** Namespaces
 *****************************************************************************/
 
-namespace kobuki {
+namespace kmr {
 
 /*****************************************************************************
 ** Interfaces
 *****************************************************************************/
 
 /**
- * @brief  Odometry for the kobuki node.
+ * @brief  Odometry for the kmr node.
  **/
 class Odometry {
 public:
@@ -63,6 +63,6 @@ private:
   void publishOdometry(const geometry_msgs::Quaternion &odom_quat, const ecl::linear_algebra::Vector3d &pose_update_rates);
 };
 
-} // namespace kobuki
+} // namespace kmr
 
-#endif /* KOBUKI_NODE_ODOMETRY_HPP_ */
+#endif /* KMR_NODE_ODOMETRY_HPP_ */

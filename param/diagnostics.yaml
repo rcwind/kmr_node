@@ -12,9 +12,9 @@ analyzers:
     timeout: 5.0
     contains: ['Battery']
     remove_prefix: mobile_base_nodelet_manager
-  kobuki:
+  kmr:
     type: diagnostic_aggregator/GenericAnalyzer
-    path: 'Kobuki'
+    path: 'Kmr'
     timeout: 5.0
     contains: ['Watchdog', 'Motor State']
     remove_prefix: mobile_base_nodelet_manager

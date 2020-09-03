@@ -27,9 +27,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * @file /kobuki_node/src/nodelet/kobuki_nodelet.cpp
+ * @file /kmr_node/src/nodelet/kmr_nodelet.cpp
  *
- * @brief Implementation for the ROS Kobuki nodelet
+ * @brief Implementation for the ROS Kmr nodelet
  **/
 
 /*****************************************************************************
@@ -39,53 +39,53 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 #include <ecl/threads/thread.hpp>
-#include "kobuki_node/kobuki_ros.hpp"
+#include "kmr_node/kmr_ros.hpp"
 
 
-namespace kobuki
+namespace kmr
 {
 
-class KobukiNodelet : public nodelet::Nodelet
+class KmrNodelet : public nodelet::Nodelet
 {
 public:
-  KobukiNodelet() : shutdown_requested_(false) {};
-  ~KobukiNodelet()
+  KmrNodelet() : shutdown_requested_(false) {};
+  ~KmrNodelet()
   {
-    NODELET_DEBUG_STREAM("Kobuki : waiting for update thread to finish.");
+    NODELET_DEBUG_STREAM("Kmr : waiting for update thread to finish.");
     shutdown_requested_ = true;
     update_thread_.join();
   }
   virtual void onInit()
   {
-    NODELET_DEBUG_STREAM("Kobuki : initialising nodelet...");
+    NODELET_DEBUG_STREAM("Kmr : initialising nodelet...");
     std::string nodelet_name = this->getName();
-    kobuki_.reset(new KobukiRos(nodelet_name));
+    kmr_.reset(new KmrRos(nodelet_name));
     // if there are latency issues with callbacks, we might want to move to process callbacks in multiple threads (use MTPrivateNodeHandle)
-    if (kobuki_->init(this->getPrivateNodeHandle(), this->getNodeHandle()))
+    if (kmr_->init(this->getPrivateNodeHandle(), this->getNodeHandle()))
     {
-      update_thread_.start(&KobukiNodelet::update, *this);
-      NODELET_INFO_STREAM("Kobuki : initialised.");
+      update_thread_.start(&KmrNodelet::update, *this);
+      NODELET_INFO_STREAM("Kmr : initialised.");
     }
     else
     {
-      NODELET_ERROR_STREAM("Kobuki : could not initialise! Please restart.");
+      NODELET_ERROR_STREAM("Kmr : could not initialise! Please restart.");
     }
   }
 private:
   void update()
   {
     ros::Rate spin_rate(10);
-    while (!shutdown_requested_ && ros::ok() && kobuki_->update())
+    while (!shutdown_requested_ && ros::ok() && kmr_->update())
     {
       spin_rate.sleep();
     }
   }
 
-  boost::shared_ptr<KobukiRos> kobuki_;
+  boost::shared_ptr<KmrRos> kmr_;
   ecl::Thread update_thread_;
   bool shutdown_requested_;
 };
 
-} // namespace kobuki
+} // namespace kmr
 
-PLUGINLIB_EXPORT_CLASS(kobuki::KobukiNodelet, nodelet::Nodelet);
+PLUGINLIB_EXPORT_CLASS(kmr::KmrNodelet, nodelet::Nodelet);

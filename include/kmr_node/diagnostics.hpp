@@ -1,32 +1,32 @@
 /**
- * @file /kobuki_node/include/kobuki_node/diagnostics.hpp
+ * @file /kmr_node/include/kmr_node/diagnostics.hpp
  *
- * @brief Diagnostics for the kobuki node.
+ * @brief Diagnostics for the kmr node.
  *
  * License: BSD
- *   https://raw.github.com/yujinrobot/kobuki/hydro-devel/kobuki_node/LICENSE
+ *   https://raw.github.com/yujinrobot/kmr/hydro-devel/kmr_node/LICENSE
  **/
 /*****************************************************************************
 ** Ifdefs
 *****************************************************************************/
 
-#ifndef KOBUKI_NODE_DIAGNOSTICS_HPP_
-#define KOBUKI_NODE_DIAGNOSTICS_HPP_
+#ifndef KMR_NODE_DIAGNOSTICS_HPP_
+#define KMR_NODE_DIAGNOSTICS_HPP_
 
 /*****************************************************************************
 ** Includes
 *****************************************************************************/
 
-#include <kobuki_driver/packets/cliff.hpp>
-#include <kobuki_driver/modules/battery.hpp>
-#include <kobuki_driver/packets/core_sensors.hpp>
+#include <kmr_driver/packets/cliff.hpp>
+#include <kmr_driver/modules/battery.hpp>
+#include <kmr_driver/packets/core_sensors.hpp>
 #include <diagnostic_updater/diagnostic_updater.h>
 
 /*****************************************************************************
 ** Namespaces
 *****************************************************************************/
 
-namespace kobuki {
+namespace kmr {
 
 /*****************************************************************************
 ** Interfaces
@@ -47,7 +47,7 @@ private:
 };
 
 /**
- * Simple diagnostic checking to see if kobuki is streaming data or not.
+ * Simple diagnostic checking to see if kmr is streaming data or not.
  */
 class WatchdogTask : public diagnostic_updater::DiagnosticTask {
 public:
@@ -168,6 +168,6 @@ private:
   std::vector<uint16_t> values;
 };
 
-} // namespace kobuki
+} // namespace kmr
 
-#endif /* KOBUKI_NODE_DIAGNOSTICS_HPP_ */
+#endif /* KMR_NODE_DIAGNOSTICS_HPP_ */

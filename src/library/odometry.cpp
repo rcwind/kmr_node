@@ -1,5 +1,5 @@
 /**
- * @file /kobuki_node/src/node/odometry.cpp
+ * @file /kmr_node/src/node/odometry.cpp
  *
  * @brief File comment
  *
@@ -11,13 +11,13 @@
 ** Includes
 *****************************************************************************/
 
-#include "../../include/kobuki_node/odometry.hpp"
+#include "../../include/kmr_node/odometry.hpp"
 
 /*****************************************************************************
 ** Namespaces
 *****************************************************************************/
 
-namespace kobuki {
+namespace kmr {
 
 /*****************************************************************************
 ** Implementation
@@ -34,37 +34,37 @@ void Odometry::init(ros::NodeHandle& nh, const std::string& name) {
   double timeout;
   nh.param("cmd_vel_timeout", timeout, 0.6);
   cmd_vel_timeout.fromSec(timeout);
-  ROS_INFO_STREAM("Kobuki : Velocity commands timeout: " << cmd_vel_timeout << " seconds [" << name << "].");
+  ROS_INFO_STREAM("Kmr : Velocity commands timeout: " << cmd_vel_timeout << " seconds [" << name << "].");
 
   if (!nh.getParam("odom_frame", odom_frame)) {
-    ROS_WARN_STREAM("Kobuki : no param server setting for odom_frame, using default [" << odom_frame << "][" << name << "].");
+    ROS_WARN_STREAM("Kmr : no param server setting for odom_frame, using default [" << odom_frame << "][" << name << "].");
   } else {
-    ROS_INFO_STREAM("Kobuki : using odom_frame [" << odom_frame << "][" << name << "].");
+    ROS_INFO_STREAM("Kmr : using odom_frame [" << odom_frame << "][" << name << "].");
   }
 
   if (!nh.getParam("base_frame", base_frame)) {
-    ROS_WARN_STREAM("Kobuki : no param server setting for base_frame, using default [" << base_frame << "][" << name << "].");
+    ROS_WARN_STREAM("Kmr : no param server setting for base_frame, using default [" << base_frame << "][" << name << "].");
   } else {
-    ROS_INFO_STREAM("Kobuki : using base_frame [" << base_frame << "][" << name << "].");
+    ROS_INFO_STREAM("Kmr : using base_frame [" << base_frame << "][" << name << "].");
   }
 
   if (!nh.getParam("publish_tf", publish_tf)) {
-    ROS_WARN_STREAM("Kobuki : no param server setting for publish_tf, using default [" << publish_tf << "][" << name << "].");
+    ROS_WARN_STREAM("Kmr : no param server setting for publish_tf, using default [" << publish_tf << "][" << name << "].");
   } else {
     if ( publish_tf ) {
-      ROS_INFO_STREAM("Kobuki : publishing transforms [" << name << "].");
+      ROS_INFO_STREAM("Kmr : publishing transforms [" << name << "].");
     } else {
-      ROS_INFO_STREAM("Kobuki : not publishing transforms (see robot_pose_ekf) [" << name << "].");
+      ROS_INFO_STREAM("Kmr : not publishing transforms (see robot_pose_ekf) [" << name << "].");
     }
   }
 
   if (!nh.getParam("use_imu_heading", use_imu_heading)) {
-    ROS_WARN_STREAM("Kobuki : no param server setting for use_imu_heading, using default [" << use_imu_heading << "][" << name << "].");
+    ROS_WARN_STREAM("Kmr : no param server setting for use_imu_heading, using default [" << use_imu_heading << "][" << name << "].");
   } else {
     if ( use_imu_heading ) {
-      ROS_INFO_STREAM("Kobuki : using imu data for heading [" << name << "].");
+      ROS_INFO_STREAM("Kmr : using imu data for heading [" << name << "].");
     } else {
-      ROS_INFO_STREAM("Kobuki : using encoders for heading (see robot_pose_ekf) [" << name << "].");
+      ROS_INFO_STREAM("Kmr : using encoders for heading (see robot_pose_ekf) [" << name << "].");
     }
   }
 
@@ -156,4 +156,4 @@ void Odometry::publishOdometry(const geometry_msgs::Quaternion &odom_quat,
   odom_publisher.publish(odom);
 }
 
-} // namespace kobuki
+} // namespace kmr

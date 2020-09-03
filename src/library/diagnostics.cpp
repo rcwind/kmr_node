@@ -4,19 +4,19 @@
  * @brief Robot diagnostics implementation.
  *
  * License: BSD
- *   https://raw.github.com/yujinrobot/kobuki/hydro-devel/kobuki_node/LICENSE
+ *   https://raw.github.com/yujinrobot/kmr/hydro-devel/kmr_node/LICENSE
  **/
 /*****************************************************************************
  ** Includes
  *****************************************************************************/
 
-#include "../../include/kobuki_node/diagnostics.hpp"
+#include "../../include/kmr_node/diagnostics.hpp"
 
 /*****************************************************************************
 ** Namespaces
 *****************************************************************************/
 
-namespace kobuki {
+namespace kmr {
 
 /*****************************************************************************
 ** Implementation
@@ -161,4 +161,4 @@ void AnalogInputTask::run(diagnostic_updater::DiagnosticStatusWrapper &stat) {
                 values[0], values[1], values[2], values[3]);
 }
 
-} // namespace kobuki
+} // namespace kmr

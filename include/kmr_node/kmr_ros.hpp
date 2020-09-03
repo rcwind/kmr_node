@@ -27,9 +27,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * @file /kobuki_node/include/kobuki_node/kobuki_ros.hpp
+ * @file /kmr_node/include/kmr_node/kmr_ros.hpp
  *
- * @brief Wraps the kobuki driver in a ROS-specific library
+ * @brief Wraps the kmr driver in a ROS-specific library
  *
  **/
 
@@ -37,8 +37,8 @@
  ** Ifdefs
  *****************************************************************************/
 
-#ifndef KOBUKI_ROS_HPP_
-#define KOBUKI_ROS_HPP_
+#ifndef KMR_ROS_HPP_
+#define KMR_ROS_HPP_
 
 /*****************************************************************************
  ** Includes
@@ -55,23 +55,23 @@
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/Imu.h>
 #include <ecl/sigslots.hpp>
-#include <kobuki_msgs/ButtonEvent.h>
-#include <kobuki_msgs/BumperEvent.h>
-#include <kobuki_msgs/CliffEvent.h>
-#include <kobuki_msgs/ControllerInfo.h>
-#include <kobuki_msgs/DigitalOutput.h>
-#include <kobuki_msgs/DigitalInputEvent.h>
-#include <kobuki_msgs/ExternalPower.h>
-#include <kobuki_msgs/DockInfraRed.h>
-#include <kobuki_msgs/Led.h>
-#include <kobuki_msgs/MotorPower.h>
-#include <kobuki_msgs/PowerSystemEvent.h>
-#include <kobuki_msgs/RobotStateEvent.h>
-#include <kobuki_msgs/SensorState.h>
-#include <kobuki_msgs/Sound.h>
-#include <kobuki_msgs/VersionInfo.h>
-#include <kobuki_msgs/WheelDropEvent.h>
-#include <kobuki_driver/kobuki.hpp>
+#include <kmr_msgs/ButtonEvent.h>
+#include <kmr_msgs/BumperEvent.h>
+#include <kmr_msgs/CliffEvent.h>
+#include <kmr_msgs/ControllerInfo.h>
+#include <kmr_msgs/DigitalOutput.h>
+#include <kmr_msgs/DigitalInputEvent.h>
+#include <kmr_msgs/ExternalPower.h>
+#include <kmr_msgs/DockInfraRed.h>
+#include <kmr_msgs/Led.h>
+#include <kmr_msgs/MotorPower.h>
+#include <kmr_msgs/PowerSystemEvent.h>
+#include <kmr_msgs/RobotStateEvent.h>
+#include <kmr_msgs/SensorState.h>
+#include <kmr_msgs/Sound.h>
+#include <kmr_msgs/VersionInfo.h>
+#include <kmr_msgs/WheelDropEvent.h>
+#include <kmr_driver/kmr.hpp>
 #include "diagnostics.hpp"
 #include "odometry.hpp"
 
@@ -79,13 +79,13 @@
  ** Namespaces
  *****************************************************************************/
 
-namespace kobuki
+namespace kmr
 {
-class KobukiRos
+class KmrRos
 {
 public:
-  KobukiRos(std::string& node_name);
-  ~KobukiRos();
+  KmrRos(std::string& node_name);
+  ~KmrRos();
   bool init(ros::NodeHandle& nh, ros::NodeHandle& nh_pub);
   bool update();
 
@@ -96,7 +96,7 @@ private:
    **********************/
   ros::NodeHandle *node_handle;
   std::string name; // name of the ROS node
-  Kobuki kobuki;
+  Kmr kmr;
   sensor_msgs::JointState joint_states;
   Odometry odometry;
   bool cmd_vel_timed_out_; // stops warning spam when cmd_vel flags as timed out more than once in a row
@@ -123,14 +123,14 @@ private:
   ** Ros Callbacks
   **********************/
   void subscribeVelocityCommand(const geometry_msgs::TwistConstPtr);
-  void subscribeLed1Command(const kobuki_msgs::LedConstPtr);
-  void subscribeLed2Command(const kobuki_msgs::LedConstPtr);
-  void subscribeDigitalOutputCommand(const kobuki_msgs::DigitalOutputConstPtr);
-  void subscribeExternalPowerCommand(const kobuki_msgs::ExternalPowerConstPtr);
+  void subscribeLed1Command(const kmr_msgs::LedConstPtr);
+  void subscribeLed2Command(const kmr_msgs::LedConstPtr);
+  void subscribeDigitalOutputCommand(const kmr_msgs::DigitalOutputConstPtr);
+  void subscribeExternalPowerCommand(const kmr_msgs::ExternalPowerConstPtr);
   void subscribeResetOdometry(const std_msgs::EmptyConstPtr);
-  void subscribeSoundCommand(const kobuki_msgs::SoundConstPtr);
-  void subscribeMotorPower(const kobuki_msgs::MotorPowerConstPtr msg);
-  void subscribeControllerInfoCommand(const kobuki_msgs::ControllerInfoConstPtr msg);
+  void subscribeSoundCommand(const kmr_msgs::SoundConstPtr);
+  void subscribeMotorPower(const kmr_msgs::MotorPowerConstPtr msg);
+  void subscribeControllerInfoCommand(const kmr_msgs::ControllerInfoConstPtr msg);
 
   /*********************
    ** SigSlots
@@ -173,26 +173,26 @@ private:
 
 
   // debugging
-  void rosDebug(const std::string &msg) { ROS_DEBUG_STREAM("Kobuki : " << msg); }
-  void rosInfo(const std::string &msg) { ROS_INFO_STREAM("Kobuki : " << msg); }
-  void rosWarn(const std::string &msg) { ROS_WARN_STREAM("Kobuki : " << msg); }
-  void rosError(const std::string &msg) { ROS_ERROR_STREAM("Kobuki : " << msg); }
+  void rosDebug(const std::string &msg) { ROS_DEBUG_STREAM("Kmr : " << msg); }
+  void rosInfo(const std::string &msg) { ROS_INFO_STREAM("Kmr : " << msg); }
+  void rosWarn(const std::string &msg) { ROS_WARN_STREAM("Kmr : " << msg); }
+  void rosError(const std::string &msg) { ROS_ERROR_STREAM("Kmr : " << msg); }
   void rosNamed(const std::vector<std::string> &msgs) {
     if (msgs.size()==0) return;
-    if (msgs.size()==1) { ROS_INFO_STREAM("Kobuki : " << msgs[0]); }
+    if (msgs.size()==1) { ROS_INFO_STREAM("Kmr : " << msgs[0]); }
     if (msgs.size()==2) {
-      if      (msgs[0] == "debug") { ROS_DEBUG_STREAM("Kobuki : " << msgs[1]); }
-      else if (msgs[0] == "info" ) { ROS_INFO_STREAM ("Kobuki : " << msgs[1]); }
-      else if (msgs[0] == "warn" ) { ROS_WARN_STREAM ("Kobuki : " << msgs[1]); }
-      else if (msgs[0] == "error") { ROS_ERROR_STREAM("Kobuki : " << msgs[1]); }
-      else if (msgs[0] == "fatal") { ROS_FATAL_STREAM("Kobuki : " << msgs[1]); }
+      if      (msgs[0] == "debug") { ROS_DEBUG_STREAM("Kmr : " << msgs[1]); }
+      else if (msgs[0] == "info" ) { ROS_INFO_STREAM ("Kmr : " << msgs[1]); }
+      else if (msgs[0] == "warn" ) { ROS_WARN_STREAM ("Kmr : " << msgs[1]); }
+      else if (msgs[0] == "error") { ROS_ERROR_STREAM("Kmr : " << msgs[1]); }
+      else if (msgs[0] == "fatal") { ROS_FATAL_STREAM("Kmr : " << msgs[1]); }
     }
     if (msgs.size()==3) {
-      if      (msgs[0] == "debug") { ROS_DEBUG_STREAM_NAMED(msgs[1], "Kobuki : " << msgs[2]); }
-      else if (msgs[0] == "info" ) { ROS_INFO_STREAM_NAMED (msgs[1], "Kobuki : " << msgs[2]); }
-      else if (msgs[0] == "warn" ) { ROS_WARN_STREAM_NAMED (msgs[1], "Kobuki : " << msgs[2]); }
-      else if (msgs[0] == "error") { ROS_ERROR_STREAM_NAMED(msgs[1], "Kobuki : " << msgs[2]); }
-      else if (msgs[0] == "fatal") { ROS_FATAL_STREAM_NAMED(msgs[1], "Kobuki : " << msgs[2]); }
+      if      (msgs[0] == "debug") { ROS_DEBUG_STREAM_NAMED(msgs[1], "Kmr : " << msgs[2]); }
+      else if (msgs[0] == "info" ) { ROS_INFO_STREAM_NAMED (msgs[1], "Kmr : " << msgs[2]); }
+      else if (msgs[0] == "warn" ) { ROS_WARN_STREAM_NAMED (msgs[1], "Kmr : " << msgs[2]); }
+      else if (msgs[0] == "error") { ROS_ERROR_STREAM_NAMED(msgs[1], "Kmr : " << msgs[2]); }
+      else if (msgs[0] == "fatal") { ROS_FATAL_STREAM_NAMED(msgs[1], "Kmr : " << msgs[2]); }
     }
   }
 
@@ -216,6 +216,6 @@ private:
   AnalogInputTask  ainput_diagnostics;
 };
 
-} // namespace kobuki
+} // namespace kmr
 
-#endif /* KOBUKI_ROS_HPP_ */
+#endif /* KMR_ROS_HPP_ */

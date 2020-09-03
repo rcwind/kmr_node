@@ -29,7 +29,7 @@
 /**
  * @file src/node/slot_callbacks.cpp
  *
- * @brief All the slot callbacks for interrupts from the kobuki driver.
+ * @brief All the slot callbacks for interrupts from the kmr driver.
  *
  **/
 
@@ -37,17 +37,17 @@
 ** Includes
 *****************************************************************************/
 
-#include "kobuki_node/kobuki_ros.hpp"
+#include "kmr_node/kmr_ros.hpp"
 #include <sensor_msgs/PointCloud2.h>
 
 /*****************************************************************************
  ** Namespaces
  *****************************************************************************/
 
-namespace kobuki
+namespace kmr
 {
 
-void KobukiRos::processStreamData() {
+void KmrRos::processStreamData() {
   publishWheelState();
   publishSensorState();
   publishDockIRData();
@@ -60,12 +60,12 @@ void KobukiRos::processStreamData() {
 ** Publish Sensor Stream Workers
 *****************************************************************************/
 
-void KobukiRos::publishSensorState()
+void KmrRos::publishSensorState()
 {
   if ( ros::ok() ) {
     if (sensor_state_publisher.getNumSubscribers() > 0) {
-      kobuki_msgs::SensorState state;
-      CoreSensors::Data data = kobuki.getCoreSensorData();
+      kmr_msgs::SensorState state;
+      CoreSensors::Data data = kmr.getCoreSensorData();
       state.header.stamp = ros::Time::now();
       state.time_stamp = data.time_stamp; // firmware time stamp
       state.bumper = data.bumper;
@@ -80,13 +80,13 @@ void KobukiRos::publishSensorState()
       state.battery = data.battery;
       state.over_current = data.over_current;
 
-      Cliff::Data cliff_data = kobuki.getCliffData();
+      Cliff::Data cliff_data = kmr.getCliffData();
       state.bottom = cliff_data.bottom;
 
-      Current::Data current_data = kobuki.getCurrentData();
+      Current::Data current_data = kmr.getCurrentData();
       state.current = current_data.current;
 
-      GpInput::Data gp_input_data = kobuki.getGpInputData();
+      GpInput::Data gp_input_data = kmr.getGpInputData();
       state.digital_input = gp_input_data.digital_input;
       for ( unsigned int i = 0; i < gp_input_data.analog_input.size(); ++i ) {
         state.analog_input.push_back(gp_input_data.analog_input[i]);
@@ -97,17 +97,17 @@ void KobukiRos::publishSensorState()
   }
 }
 
-void KobukiRos::publishWheelState()
+void KmrRos::publishWheelState()
 {
   // Take latest encoders and gyro data
   ecl::LegacyPose2D<double> pose_update;
   ecl::linear_algebra::Vector3d pose_update_rates;
-  kobuki.updateOdometry(pose_update, pose_update_rates);
-  kobuki.getWheelJointStates(joint_states.position[0], joint_states.velocity[0],   // left wheel
+  kmr.updateOdometry(pose_update, pose_update_rates);
+  kmr.getWheelJointStates(joint_states.position[0], joint_states.velocity[0],   // left wheel
                              joint_states.position[1], joint_states.velocity[1]);  // right wheel
 
   // Update and publish odometry and joint states
-  odometry.update(pose_update, pose_update_rates, kobuki.getHeading(), kobuki.getAngularVelocity());
+  odometry.update(pose_update, pose_update_rates, kmr.getHeading(), kmr.getAngularVelocity());
 
   if (ros::ok())
   {
@@ -116,7 +116,7 @@ void KobukiRos::publishWheelState()
   }
 }
 
-void KobukiRos::publishInertia()
+void KmrRos::publishInertia()
 {
   if (ros::ok())
   {
@@ -128,7 +128,7 @@ void KobukiRos::publishInertia()
       msg->header.frame_id = "gyro_link";
       msg->header.stamp = ros::Time::now();
 
-      msg->orientation = tf::createQuaternionMsgFromRollPitchYaw(0.0, 0.0, kobuki.getHeading());
+      msg->orientation = tf::createQuaternionMsgFromRollPitchYaw(0.0, 0.0, kmr.getHeading());
 
       // set a non-zero covariance on unused dimensions (pitch and roll); this is a requirement of robot_pose_ekf
       // set yaw covariance as very low, to make it dominate over the odometry heading when combined
@@ -138,7 +138,7 @@ void KobukiRos::publishInertia()
       msg->orientation_covariance[8] = 0.05;
 
       // fill angular velocity; we ignore acceleration for now
-      msg->angular_velocity.z = kobuki.getAngularVelocity();
+      msg->angular_velocity.z = kmr.getAngularVelocity();
 
       // angular velocity covariance; useless by now, but robot_pose_ekf's
       // roadmap claims that it will compute velocities in the future
@@ -151,13 +151,13 @@ void KobukiRos::publishInertia()
   }
 }
 
-void KobukiRos::publishRawInertia()
+void KmrRos::publishRawInertia()
 {
   if ( ros::ok() && (raw_imu_data_publisher.getNumSubscribers() > 0) )
   {
     // Publish as shared pointer to leverage the nodelets' zero-copy pub/sub feature
     sensor_msgs::ImuPtr msg(new sensor_msgs::Imu);
-    ThreeAxisGyro::Data data = kobuki.getRawInertiaData();
+    ThreeAxisGyro::Data data = kmr.getRawInertiaData();
 
     ros::Time now = ros::Time::now();
     ros::Duration interval(0.01); // Time interval between each sensor reading.
@@ -170,7 +170,7 @@ void KobukiRos::publishRawInertia()
 
       // Update rate of 3d gyro sensor is 100 Hz, but robot's update rate is 50 Hz.
       // So, here is some compensation.
-      // See also https://github.com/yujinrobot/kobuki/issues/216
+      // See also https://github.com/yujinrobot/kmr/issues/216
       msg->header.stamp = now - interval * (length-i-1);
 
       // Sensing axis of 3d gyro is not match with robot. It is rotated 90 degree counterclockwise about z-axis.
@@ -183,9 +183,9 @@ void KobukiRos::publishRawInertia()
   }
 }
 
-void KobukiRos::publishUltrasonic()
+void KmrRos::publishUltrasonic()
 {
-    Ultrasonic::Data data = kobuki.getUltrasonicData();
+    Ultrasonic::Data data = kmr.getUltrasonicData();
     unsigned int length = data.followed_data_length;
     // raw data
   if ( ros::ok() && (raw_ultrasonic_data_publisher.getNumSubscribers() > 0) )
@@ -198,7 +198,7 @@ void KobukiRos::publishUltrasonic()
       std::string base_link_frame;
       double pointcloud_height, ultrasonic_radius;
       std::vector<double> angle;
-      node_handle->param("pointcloud_height", pointcloud_height, 0.04);  // kobuki_node base.yaml文件定义
+      node_handle->param("pointcloud_height", pointcloud_height, 0.04);  // kmr_node base.yaml文件定义
       node_handle->param("pointcloud_angle", angle, std::vector<double>()); 
       node_handle->param("ultrasonic_radius", ultrasonic_radius, 0.2); 
       node_handle->param<std::string>("base_frame", base_link_frame, "/base_link");
@@ -250,16 +250,16 @@ void KobukiRos::publishUltrasonic()
   }
 }
 
-void KobukiRos::publishDockIRData()
+void KmrRos::publishDockIRData()
 {
   if (ros::ok())
   {
     if (dock_ir_publisher.getNumSubscribers() > 0)
     {
-      DockIR::Data data = kobuki.getDockIRData();
+      DockIR::Data data = kmr.getDockIRData();
 
       // Publish as shared pointer to leverage the nodelets' zero-copy pub/sub feature
-      kobuki_msgs::DockInfraRedPtr msg(new kobuki_msgs::DockInfraRed);
+      kmr_msgs::DockInfraRedPtr msg(new kmr_msgs::DockInfraRed);
 
       msg->header.frame_id = "dock_ir_link";
       msg->header.stamp = ros::Time::now();
@@ -282,11 +282,11 @@ void KobukiRos::publishDockIRData()
  * The driver will only gather this data when initialising so it is
  * important that this publisher is latched.
  */
-void KobukiRos::publishVersionInfo(const VersionInfo &version_info)
+void KmrRos::publishVersionInfo(const VersionInfo &version_info)
 {
   if (ros::ok())
   {
-    kobuki_msgs::VersionInfoPtr msg(new kobuki_msgs::VersionInfo);
+    kmr_msgs::VersionInfoPtr msg(new kmr_msgs::VersionInfo);
 
     msg->firmware = VersionInfo::toString(version_info.firmware);
     msg->hardware = VersionInfo::toString(version_info.hardware);
@@ -300,12 +300,12 @@ void KobukiRos::publishVersionInfo(const VersionInfo &version_info)
     // Set available features mask depending on firmware and driver versions
     if (version_info.firmware > 65536)  // 1.0.0
     {
-      msg->features |= kobuki_msgs::VersionInfo::SMOOTH_MOVE_START;
-      msg->features |= kobuki_msgs::VersionInfo::GYROSCOPE_3D_DATA;
+      msg->features |= kmr_msgs::VersionInfo::SMOOTH_MOVE_START;
+      msg->features |= kmr_msgs::VersionInfo::GYROSCOPE_3D_DATA;
     }
     if (version_info.firmware > 65792)  // 1.1.0
     {
-      // msg->features |= kobuki_msgs::VersionInfo::SOMETHING_JINCHA_FANCY;
+      // msg->features |= kmr_msgs::VersionInfo::SOMETHING_JINCHA_FANCY;
     }
     // if (msg->firmware > ...
 
@@ -313,12 +313,12 @@ void KobukiRos::publishVersionInfo(const VersionInfo &version_info)
   }
 }
 
-void KobukiRos::publishControllerInfo()
+void KmrRos::publishControllerInfo()
 {
   if (ros::ok())
   {
-    kobuki_msgs::ControllerInfoPtr msg(new kobuki_msgs::ControllerInfo);
-    ControllerInfo::Data data = kobuki.getControllerInfoData();
+    kmr_msgs::ControllerInfoPtr msg(new kmr_msgs::ControllerInfo);
+    ControllerInfo::Data data = kmr.getControllerInfoData();
 
     msg->type = data.type;
     msg->p_gain = static_cast<float>(data.p_gain) * 0.001f;;
@@ -333,60 +333,60 @@ void KobukiRos::publishControllerInfo()
 ** Events
 *****************************************************************************/
 
-void KobukiRos::publishButtonEvent(const ButtonEvent &event)
+void KmrRos::publishButtonEvent(const ButtonEvent &event)
 {
   if (ros::ok())
   {
-    kobuki_msgs::ButtonEventPtr msg(new kobuki_msgs::ButtonEvent);
+    kmr_msgs::ButtonEventPtr msg(new kmr_msgs::ButtonEvent);
     switch(event.state) {
-      case(ButtonEvent::Pressed)  : { msg->state = kobuki_msgs::ButtonEvent::PRESSED;  break; }
-      case(ButtonEvent::Released) : { msg->state = kobuki_msgs::ButtonEvent::RELEASED; break; }
+      case(ButtonEvent::Pressed)  : { msg->state = kmr_msgs::ButtonEvent::PRESSED;  break; }
+      case(ButtonEvent::Released) : { msg->state = kmr_msgs::ButtonEvent::RELEASED; break; }
       default: break;
     }
     switch(event.button) {
-      case(ButtonEvent::Button0) : { msg->button = kobuki_msgs::ButtonEvent::Button0; break; }
-      case(ButtonEvent::Button1) : { msg->button = kobuki_msgs::ButtonEvent::Button1; break; }
-      case(ButtonEvent::Button2) : { msg->button = kobuki_msgs::ButtonEvent::Button2; break; }
+      case(ButtonEvent::Button0) : { msg->button = kmr_msgs::ButtonEvent::Button0; break; }
+      case(ButtonEvent::Button1) : { msg->button = kmr_msgs::ButtonEvent::Button1; break; }
+      case(ButtonEvent::Button2) : { msg->button = kmr_msgs::ButtonEvent::Button2; break; }
       default: break;
     }
     button_event_publisher.publish(msg);
   }
 }
 
-void KobukiRos::publishBumperEvent(const BumperEvent &event)
+void KmrRos::publishBumperEvent(const BumperEvent &event)
 {
   if (ros::ok())
   {
-    kobuki_msgs::BumperEventPtr msg(new kobuki_msgs::BumperEvent);
+    kmr_msgs::BumperEventPtr msg(new kmr_msgs::BumperEvent);
     switch(event.state) {
-      case(BumperEvent::Pressed)  : { msg->state = kobuki_msgs::BumperEvent::PRESSED;  break; }
-      case(BumperEvent::Released) : { msg->state = kobuki_msgs::BumperEvent::RELEASED; break; }
+      case(BumperEvent::Pressed)  : { msg->state = kmr_msgs::BumperEvent::PRESSED;  break; }
+      case(BumperEvent::Released) : { msg->state = kmr_msgs::BumperEvent::RELEASED; break; }
       default: break;
     }
     switch(event.bumper) {
-      case(BumperEvent::Left)   : { msg->bumper = kobuki_msgs::BumperEvent::LEFT;   break; }
-      case(BumperEvent::Center) : { msg->bumper = kobuki_msgs::BumperEvent::CENTER; break; }
-      case(BumperEvent::Right)  : { msg->bumper = kobuki_msgs::BumperEvent::RIGHT;  break; }
+      case(BumperEvent::Left)   : { msg->bumper = kmr_msgs::BumperEvent::LEFT;   break; }
+      case(BumperEvent::Center) : { msg->bumper = kmr_msgs::BumperEvent::CENTER; break; }
+      case(BumperEvent::Right)  : { msg->bumper = kmr_msgs::BumperEvent::RIGHT;  break; }
       default: break;
     }
     bumper_event_publisher.publish(msg);
   }
 }
 
-void KobukiRos::publishCliffEvent(const CliffEvent &event)
+void KmrRos::publishCliffEvent(const CliffEvent &event)
 {
   if (ros::ok())
   {
-    kobuki_msgs::CliffEventPtr msg(new kobuki_msgs::CliffEvent);
+    kmr_msgs::CliffEventPtr msg(new kmr_msgs::CliffEvent);
     switch(event.state) {
-      case(CliffEvent::Floor) : { msg->state = kobuki_msgs::CliffEvent::FLOOR; break; }
-      case(CliffEvent::Cliff) : { msg->state = kobuki_msgs::CliffEvent::CLIFF; break; }
+      case(CliffEvent::Floor) : { msg->state = kmr_msgs::CliffEvent::FLOOR; break; }
+      case(CliffEvent::Cliff) : { msg->state = kmr_msgs::CliffEvent::CLIFF; break; }
       default: break;
     }
     switch(event.sensor) {
-      case(CliffEvent::Left)   : { msg->sensor = kobuki_msgs::CliffEvent::LEFT;   break; }
-      case(CliffEvent::Center) : { msg->sensor = kobuki_msgs::CliffEvent::CENTER; break; }
-      case(CliffEvent::Right)  : { msg->sensor = kobuki_msgs::CliffEvent::RIGHT;  break; }
+      case(CliffEvent::Left)   : { msg->sensor = kmr_msgs::CliffEvent::LEFT;   break; }
+      case(CliffEvent::Center) : { msg->sensor = kmr_msgs::CliffEvent::CENTER; break; }
+      case(CliffEvent::Right)  : { msg->sensor = kmr_msgs::CliffEvent::RIGHT;  break; }
       default: break;
     }
     msg->bottom = event.bottom;
@@ -394,68 +394,68 @@ void KobukiRos::publishCliffEvent(const CliffEvent &event)
   }
 }
 
-void KobukiRos::publishWheelEvent(const WheelEvent &event)
+void KmrRos::publishWheelEvent(const WheelEvent &event)
 {
   if (ros::ok())
   {
-    kobuki_msgs::WheelDropEventPtr msg(new kobuki_msgs::WheelDropEvent);
+    kmr_msgs::WheelDropEventPtr msg(new kmr_msgs::WheelDropEvent);
     switch(event.state) {
-      case(WheelEvent::Dropped) : { msg->state = kobuki_msgs::WheelDropEvent::DROPPED; break; }
-      case(WheelEvent::Raised)  : { msg->state = kobuki_msgs::WheelDropEvent::RAISED;  break; }
+      case(WheelEvent::Dropped) : { msg->state = kmr_msgs::WheelDropEvent::DROPPED; break; }
+      case(WheelEvent::Raised)  : { msg->state = kmr_msgs::WheelDropEvent::RAISED;  break; }
       default: break;
     }
     switch(event.wheel) {
-      case(WheelEvent::Left)  : { msg->wheel = kobuki_msgs::WheelDropEvent::LEFT;  break; }
-      case(WheelEvent::Right) : { msg->wheel = kobuki_msgs::WheelDropEvent::RIGHT; break; }
+      case(WheelEvent::Left)  : { msg->wheel = kmr_msgs::WheelDropEvent::LEFT;  break; }
+      case(WheelEvent::Right) : { msg->wheel = kmr_msgs::WheelDropEvent::RIGHT; break; }
       default: break;
     }
     wheel_event_publisher.publish(msg);
   }
 }
 
-void KobukiRos::publishPowerEvent(const PowerEvent &event)
+void KmrRos::publishPowerEvent(const PowerEvent &event)
 {
   if (ros::ok())
   {
-    kobuki_msgs::PowerSystemEventPtr msg(new kobuki_msgs::PowerSystemEvent);
+    kmr_msgs::PowerSystemEventPtr msg(new kmr_msgs::PowerSystemEvent);
     switch(event.event) {
       case(PowerEvent::Unplugged) :
-        { msg->event = kobuki_msgs::PowerSystemEvent::UNPLUGGED; break; }
+        { msg->event = kmr_msgs::PowerSystemEvent::UNPLUGGED; break; }
       case(PowerEvent::PluggedToAdapter) :
-        { msg->event = kobuki_msgs::PowerSystemEvent::PLUGGED_TO_ADAPTER;  break; }
+        { msg->event = kmr_msgs::PowerSystemEvent::PLUGGED_TO_ADAPTER;  break; }
       case(PowerEvent::PluggedToDockbase) :
-        { msg->event = kobuki_msgs::PowerSystemEvent::PLUGGED_TO_DOCKBASE; break; }
+        { msg->event = kmr_msgs::PowerSystemEvent::PLUGGED_TO_DOCKBASE; break; }
       case(PowerEvent::ChargeCompleted)  :
-        { msg->event = kobuki_msgs::PowerSystemEvent::CHARGE_COMPLETED;  break; }
+        { msg->event = kmr_msgs::PowerSystemEvent::CHARGE_COMPLETED;  break; }
       case(PowerEvent::BatteryLow) :
-        { msg->event = kobuki_msgs::PowerSystemEvent::BATTERY_LOW; break; }
+        { msg->event = kmr_msgs::PowerSystemEvent::BATTERY_LOW; break; }
       case(PowerEvent::BatteryCritical) :
-        { msg->event = kobuki_msgs::PowerSystemEvent::BATTERY_CRITICAL;  break; }
+        { msg->event = kmr_msgs::PowerSystemEvent::BATTERY_CRITICAL;  break; }
       default: break;
     }
     power_event_publisher.publish(msg);
   }
 }
 
-void KobukiRos::publishInputEvent(const InputEvent &event)
+void KmrRos::publishInputEvent(const InputEvent &event)
 {
   if (ros::ok())
   {
-    kobuki_msgs::DigitalInputEventPtr msg(new kobuki_msgs::DigitalInputEvent);
+    kmr_msgs::DigitalInputEventPtr msg(new kmr_msgs::DigitalInputEvent);
     for (unsigned int i = 0; i < msg->values.size(); i++)
       msg->values[i] = event.values[i];
     input_event_publisher.publish(msg);
   }
 }
 
-void KobukiRos::publishRobotEvent(const RobotEvent &event)
+void KmrRos::publishRobotEvent(const RobotEvent &event)
 {
   if (ros::ok())
   {
-    kobuki_msgs::RobotStateEventPtr msg(new kobuki_msgs::RobotStateEvent);
+    kmr_msgs::RobotStateEventPtr msg(new kmr_msgs::RobotStateEvent);
     switch(event.state) {
-      case(RobotEvent::Online)  : { msg->state = kobuki_msgs::RobotStateEvent::ONLINE;  break; }
-      case(RobotEvent::Offline) : { msg->state = kobuki_msgs::RobotStateEvent::OFFLINE; break; }
+      case(RobotEvent::Online)  : { msg->state = kmr_msgs::RobotStateEvent::ONLINE;  break; }
+      case(RobotEvent::Offline) : { msg->state = kmr_msgs::RobotStateEvent::OFFLINE; break; }
       default: break;
     }
 
@@ -476,7 +476,7 @@ void KobukiRos::publishRobotEvent(const RobotEvent &event)
  *
  * @param buffer
  */
-void KobukiRos::publishRawDataCommand(Command::Buffer &buffer)
+void KmrRos::publishRawDataCommand(Command::Buffer &buffer)
 {
   if ( raw_data_command_publisher.getNumSubscribers() > 0 ) { // do not do string processing if there is no-one listening.
     std::ostringstream ostream;
@@ -503,7 +503,7 @@ void KobukiRos::publishRawDataCommand(Command::Buffer &buffer)
  *
  * @param buffer
  */
-void KobukiRos::publishRawDataStream(PacketFinder::BufferType &buffer)
+void KmrRos::publishRawDataStream(PacketFinder::BufferType &buffer)
 {
   if ( raw_data_stream_publisher.getNumSubscribers() > 0 ) { // do not do string processing if there is no-one listening.
     /*std::cout << "size: [" << buffer.size() << "], asize: [" << buffer.asize() << "]" << std::endl;
@@ -538,7 +538,7 @@ void KobukiRos::publishRawDataStream(PacketFinder::BufferType &buffer)
   }
 }
 
-void KobukiRos::publishRawControlCommand(const std::vector<short> &velocity_commands)
+void KmrRos::publishRawControlCommand(const std::vector<short> &velocity_commands)
 {
   if ( raw_control_command_publisher.getNumSubscribers() > 0 ) {
     std_msgs::Int16MultiArrayPtr msg(new std_msgs::Int16MultiArray);
@@ -551,4 +551,4 @@ void KobukiRos::publishRawControlCommand(const std::vector<short> &velocity_comm
   return;
 }
 
-} // namespace kobuki
+} // namespace kmr

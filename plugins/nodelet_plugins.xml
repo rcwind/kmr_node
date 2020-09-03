@@ -1,7 +1,7 @@
-<library path="lib/libkobuki_nodelet">
-  <class name="kobuki_node/KobukiNodelet" type="kobuki::KobukiNodelet" base_class_type="nodelet::Nodelet">
+<library path="lib/libkmr_nodelet">
+  <class name="kmr_node/KmrNodelet" type="kmr::KmrNodelet" base_class_type="nodelet::Nodelet">
     <description>
-      Nodelet version of the Kobuki node
+      Nodelet version of the Kmr node
     </description>
   </class>
 </library>

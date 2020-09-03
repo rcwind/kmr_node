@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #AUTHOR: Younghun Ju <yhju@yujinrobot.comm>, <yhju83@gmail.com>
 
-import roslib; roslib.load_manifest('kobuki_node')
+import roslib; roslib.load_manifest('kmr_node')
 import rospy
 
 from tf.transformations import euler_from_quaternion

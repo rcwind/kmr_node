@@ -1,5 +1,5 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Changelog for package kobuki_node
+Changelog for package kmr_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 0.7.6 (2018-03-14)
@@ -8,18 +8,18 @@ Changelog for package kobuki_node
 
 0.6.6 (2015-05-27)
 ------------------
-* install image directory closes `#357 <https://github.com/yujinrobot/kobuki/issues/357>`_
+* install image directory closes `#357 <https://github.com/yujinrobot/kmr/issues/357>`_
 * Contributors: Jihoon Lee
 
 0.6.5 (2014-11-21)
 ------------------
-* update diagnostics.yaml to show kobuki battery properly in kobuki dashboard. Fix `#350 <https://github.com/yujinrobot/kobuki/issues/350>`_
+* update diagnostics.yaml to show kmr battery properly in kmr dashboard. Fix `#350 <https://github.com/yujinrobot/kmr/issues/350>`_
 * Contributors: Jihoon Lee
 
 0.6.4 (2014-08-26)
 ------------------
-* Merge branch 'indigo' of https://github.com/yujinrobot/kobuki into indigo
-* rename run_depend of kobuki_node from kobuki_apps to kobuki_rapps
+* Merge branch 'indigo' of https://github.com/yujinrobot/kmr into indigo
+* rename run_depend of kmr_node from kmr_apps to kmr_rapps
 * Contributors: Jihoon Lee
 
 0.6.3 (2014-08-25)
@@ -27,8 +27,8 @@ Changelog for package kobuki_node
 
 0.6.2 (2014-08-11)
 ------------------
-* add queue_size on publiehrs `#338 <https://github.com/yujinrobot/kobuki/issues/338>`_
-* fixing the file link resolves `#339 <https://github.com/yujinrobot/kobuki/issues/339>`_
+* add queue_size on publiehrs `#338 <https://github.com/yujinrobot/kmr/issues/338>`_
+* fixing the file link resolves `#339 <https://github.com/yujinrobot/kmr/issues/339>`_
 * Contributors: Jihoon Lee
 
 0.6.1 (2014-08-08)
@@ -36,16 +36,16 @@ Changelog for package kobuki_node
 
 0.6.0 (2014-08-08)
 ------------------
-* remove kobuki_capabilities dependency from package.xml remove author emails
-* moves app manager launcher to kobuki_capabilities (solves `#331 <https://github.com/yujinrobot/kobuki/issues/331>`_)
-* kobuki_node: adds shutdown flag to nodelet (fixes `#324 <https://github.com/yujinrobot/kobuki/issues/324>`_)
+* remove kmr_capabilities dependency from package.xml remove author emails
+* moves app manager launcher to kmr_capabilities (solves `#331 <https://github.com/yujinrobot/kmr/issues/331>`_)
+* kmr_node: adds shutdown flag to nodelet (fixes `#324 <https://github.com/yujinrobot/kmr/issues/324>`_)
 * fixes typo
 * updates icons for apps and app manager launcher
 * adds minor changes due to capability server and app manager updates
 * updates for new rapp lists
 * publish_tf arg for the launcher.
-* removes rviz launcher and dependency (fixes `#315 <https://github.com/yujinrobot/kobuki/issues/315>`_)
-* adds app manager and capability server launcher for kobuki
+* removes rviz launcher and dependency (fixes `#315 <https://github.com/yujinrobot/kmr/issues/315>`_)
+* adds app manager and capability server launcher for kmr
 * Add missing run dependency on yocs_cmd_vel_mux
 * Contributors: Daniel Stonier, Jihoon Lee, Jorge Santos, Marcus Liebhardt
 
@@ -85,4 +85,4 @@ Changelog for package kobuki_node
 Previous versions, bugfixing
 ============================
 
-Available in ROS wiki: http://ros.org/wiki/kobuki/ChangeList
+Available in ROS wiki: http://ros.org/wiki/kmr/ChangeList
