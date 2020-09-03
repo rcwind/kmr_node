@@ -64,7 +64,7 @@ void KmrRos::publishSensorState()
 {
   if ( ros::ok() ) {
     if (sensor_state_publisher.getNumSubscribers() > 0) {
-      kmr_msgs::SensorState state;
+      kobuki_msgs::SensorState state;
       CoreSensors::Data data = kmr.getCoreSensorData();
       state.header.stamp = ros::Time::now();
       state.time_stamp = data.time_stamp; // firmware time stamp
@@ -259,7 +259,7 @@ void KmrRos::publishDockIRData()
       DockIR::Data data = kmr.getDockIRData();
 
       // Publish as shared pointer to leverage the nodelets' zero-copy pub/sub feature
-      kmr_msgs::DockInfraRedPtr msg(new kmr_msgs::DockInfraRed);
+      kobuki_msgs::DockInfraRedPtr msg(new kobuki_msgs::DockInfraRed);
 
       msg->header.frame_id = "dock_ir_link";
       msg->header.stamp = ros::Time::now();
@@ -286,7 +286,7 @@ void KmrRos::publishVersionInfo(const VersionInfo &version_info)
 {
   if (ros::ok())
   {
-    kmr_msgs::VersionInfoPtr msg(new kmr_msgs::VersionInfo);
+    kobuki_msgs::VersionInfoPtr msg(new kobuki_msgs::VersionInfo);
 
     msg->firmware = VersionInfo::toString(version_info.firmware);
     msg->hardware = VersionInfo::toString(version_info.hardware);
@@ -300,12 +300,12 @@ void KmrRos::publishVersionInfo(const VersionInfo &version_info)
     // Set available features mask depending on firmware and driver versions
     if (version_info.firmware > 65536)  // 1.0.0
     {
-      msg->features |= kmr_msgs::VersionInfo::SMOOTH_MOVE_START;
-      msg->features |= kmr_msgs::VersionInfo::GYROSCOPE_3D_DATA;
+      msg->features |= kobuki_msgs::VersionInfo::SMOOTH_MOVE_START;
+      msg->features |= kobuki_msgs::VersionInfo::GYROSCOPE_3D_DATA;
     }
     if (version_info.firmware > 65792)  // 1.1.0
     {
-      // msg->features |= kmr_msgs::VersionInfo::SOMETHING_JINCHA_FANCY;
+      // msg->features |= kobuki_msgs::VersionInfo::SOMETHING_JINCHA_FANCY;
     }
     // if (msg->firmware > ...
 
@@ -317,7 +317,7 @@ void KmrRos::publishControllerInfo()
 {
   if (ros::ok())
   {
-    kmr_msgs::ControllerInfoPtr msg(new kmr_msgs::ControllerInfo);
+    kobuki_msgs::ControllerInfoPtr msg(new kobuki_msgs::ControllerInfo);
     ControllerInfo::Data data = kmr.getControllerInfoData();
 
     msg->type = data.type;
@@ -337,16 +337,16 @@ void KmrRos::publishButtonEvent(const ButtonEvent &event)
 {
   if (ros::ok())
   {
-    kmr_msgs::ButtonEventPtr msg(new kmr_msgs::ButtonEvent);
+    kobuki_msgs::ButtonEventPtr msg(new kobuki_msgs::ButtonEvent);
     switch(event.state) {
-      case(ButtonEvent::Pressed)  : { msg->state = kmr_msgs::ButtonEvent::PRESSED;  break; }
-      case(ButtonEvent::Released) : { msg->state = kmr_msgs::ButtonEvent::RELEASED; break; }
+      case(ButtonEvent::Pressed)  : { msg->state = kobuki_msgs::ButtonEvent::PRESSED;  break; }
+      case(ButtonEvent::Released) : { msg->state = kobuki_msgs::ButtonEvent::RELEASED; break; }
       default: break;
     }
     switch(event.button) {
-      case(ButtonEvent::Button0) : { msg->button = kmr_msgs::ButtonEvent::Button0; break; }
-      case(ButtonEvent::Button1) : { msg->button = kmr_msgs::ButtonEvent::Button1; break; }
-      case(ButtonEvent::Button2) : { msg->button = kmr_msgs::ButtonEvent::Button2; break; }
+      case(ButtonEvent::Button0) : { msg->button = kobuki_msgs::ButtonEvent::Button0; break; }
+      case(ButtonEvent::Button1) : { msg->button = kobuki_msgs::ButtonEvent::Button1; break; }
+      case(ButtonEvent::Button2) : { msg->button = kobuki_msgs::ButtonEvent::Button2; break; }
       default: break;
     }
     button_event_publisher.publish(msg);
@@ -357,16 +357,16 @@ void KmrRos::publishBumperEvent(const BumperEvent &event)
 {
   if (ros::ok())
   {
-    kmr_msgs::BumperEventPtr msg(new kmr_msgs::BumperEvent);
+    kobuki_msgs::BumperEventPtr msg(new kobuki_msgs::BumperEvent);
     switch(event.state) {
-      case(BumperEvent::Pressed)  : { msg->state = kmr_msgs::BumperEvent::PRESSED;  break; }
-      case(BumperEvent::Released) : { msg->state = kmr_msgs::BumperEvent::RELEASED; break; }
+      case(BumperEvent::Pressed)  : { msg->state = kobuki_msgs::BumperEvent::PRESSED;  break; }
+      case(BumperEvent::Released) : { msg->state = kobuki_msgs::BumperEvent::RELEASED; break; }
       default: break;
     }
     switch(event.bumper) {
-      case(BumperEvent::Left)   : { msg->bumper = kmr_msgs::BumperEvent::LEFT;   break; }
-      case(BumperEvent::Center) : { msg->bumper = kmr_msgs::BumperEvent::CENTER; break; }
-      case(BumperEvent::Right)  : { msg->bumper = kmr_msgs::BumperEvent::RIGHT;  break; }
+      case(BumperEvent::Left)   : { msg->bumper = kobuki_msgs::BumperEvent::LEFT;   break; }
+      case(BumperEvent::Center) : { msg->bumper = kobuki_msgs::BumperEvent::CENTER; break; }
+      case(BumperEvent::Right)  : { msg->bumper = kobuki_msgs::BumperEvent::RIGHT;  break; }
       default: break;
     }
     bumper_event_publisher.publish(msg);
@@ -377,16 +377,16 @@ void KmrRos::publishCliffEvent(const CliffEvent &event)
 {
   if (ros::ok())
   {
-    kmr_msgs::CliffEventPtr msg(new kmr_msgs::CliffEvent);
+    kobuki_msgs::CliffEventPtr msg(new kobuki_msgs::CliffEvent);
     switch(event.state) {
-      case(CliffEvent::Floor) : { msg->state = kmr_msgs::CliffEvent::FLOOR; break; }
-      case(CliffEvent::Cliff) : { msg->state = kmr_msgs::CliffEvent::CLIFF; break; }
+      case(CliffEvent::Floor) : { msg->state = kobuki_msgs::CliffEvent::FLOOR; break; }
+      case(CliffEvent::Cliff) : { msg->state = kobuki_msgs::CliffEvent::CLIFF; break; }
       default: break;
     }
     switch(event.sensor) {
-      case(CliffEvent::Left)   : { msg->sensor = kmr_msgs::CliffEvent::LEFT;   break; }
-      case(CliffEvent::Center) : { msg->sensor = kmr_msgs::CliffEvent::CENTER; break; }
-      case(CliffEvent::Right)  : { msg->sensor = kmr_msgs::CliffEvent::RIGHT;  break; }
+      case(CliffEvent::Left)   : { msg->sensor = kobuki_msgs::CliffEvent::LEFT;   break; }
+      case(CliffEvent::Center) : { msg->sensor = kobuki_msgs::CliffEvent::CENTER; break; }
+      case(CliffEvent::Right)  : { msg->sensor = kobuki_msgs::CliffEvent::RIGHT;  break; }
       default: break;
     }
     msg->bottom = event.bottom;
@@ -398,15 +398,15 @@ void KmrRos::publishWheelEvent(const WheelEvent &event)
 {
   if (ros::ok())
   {
-    kmr_msgs::WheelDropEventPtr msg(new kmr_msgs::WheelDropEvent);
+    kobuki_msgs::WheelDropEventPtr msg(new kobuki_msgs::WheelDropEvent);
     switch(event.state) {
-      case(WheelEvent::Dropped) : { msg->state = kmr_msgs::WheelDropEvent::DROPPED; break; }
-      case(WheelEvent::Raised)  : { msg->state = kmr_msgs::WheelDropEvent::RAISED;  break; }
+      case(WheelEvent::Dropped) : { msg->state = kobuki_msgs::WheelDropEvent::DROPPED; break; }
+      case(WheelEvent::Raised)  : { msg->state = kobuki_msgs::WheelDropEvent::RAISED;  break; }
       default: break;
     }
     switch(event.wheel) {
-      case(WheelEvent::Left)  : { msg->wheel = kmr_msgs::WheelDropEvent::LEFT;  break; }
-      case(WheelEvent::Right) : { msg->wheel = kmr_msgs::WheelDropEvent::RIGHT; break; }
+      case(WheelEvent::Left)  : { msg->wheel = kobuki_msgs::WheelDropEvent::LEFT;  break; }
+      case(WheelEvent::Right) : { msg->wheel = kobuki_msgs::WheelDropEvent::RIGHT; break; }
       default: break;
     }
     wheel_event_publisher.publish(msg);
@@ -417,20 +417,20 @@ void KmrRos::publishPowerEvent(const PowerEvent &event)
 {
   if (ros::ok())
   {
-    kmr_msgs::PowerSystemEventPtr msg(new kmr_msgs::PowerSystemEvent);
+    kobuki_msgs::PowerSystemEventPtr msg(new kobuki_msgs::PowerSystemEvent);
     switch(event.event) {
       case(PowerEvent::Unplugged) :
-        { msg->event = kmr_msgs::PowerSystemEvent::UNPLUGGED; break; }
+        { msg->event = kobuki_msgs::PowerSystemEvent::UNPLUGGED; break; }
       case(PowerEvent::PluggedToAdapter) :
-        { msg->event = kmr_msgs::PowerSystemEvent::PLUGGED_TO_ADAPTER;  break; }
+        { msg->event = kobuki_msgs::PowerSystemEvent::PLUGGED_TO_ADAPTER;  break; }
       case(PowerEvent::PluggedToDockbase) :
-        { msg->event = kmr_msgs::PowerSystemEvent::PLUGGED_TO_DOCKBASE; break; }
+        { msg->event = kobuki_msgs::PowerSystemEvent::PLUGGED_TO_DOCKBASE; break; }
       case(PowerEvent::ChargeCompleted)  :
-        { msg->event = kmr_msgs::PowerSystemEvent::CHARGE_COMPLETED;  break; }
+        { msg->event = kobuki_msgs::PowerSystemEvent::CHARGE_COMPLETED;  break; }
       case(PowerEvent::BatteryLow) :
-        { msg->event = kmr_msgs::PowerSystemEvent::BATTERY_LOW; break; }
+        { msg->event = kobuki_msgs::PowerSystemEvent::BATTERY_LOW; break; }
       case(PowerEvent::BatteryCritical) :
-        { msg->event = kmr_msgs::PowerSystemEvent::BATTERY_CRITICAL;  break; }
+        { msg->event = kobuki_msgs::PowerSystemEvent::BATTERY_CRITICAL;  break; }
       default: break;
     }
     power_event_publisher.publish(msg);
@@ -441,7 +441,7 @@ void KmrRos::publishInputEvent(const InputEvent &event)
 {
   if (ros::ok())
   {
-    kmr_msgs::DigitalInputEventPtr msg(new kmr_msgs::DigitalInputEvent);
+    kobuki_msgs::DigitalInputEventPtr msg(new kobuki_msgs::DigitalInputEvent);
     for (unsigned int i = 0; i < msg->values.size(); i++)
       msg->values[i] = event.values[i];
     input_event_publisher.publish(msg);
@@ -452,10 +452,10 @@ void KmrRos::publishRobotEvent(const RobotEvent &event)
 {
   if (ros::ok())
   {
-    kmr_msgs::RobotStateEventPtr msg(new kmr_msgs::RobotStateEvent);
+    kobuki_msgs::RobotStateEventPtr msg(new kobuki_msgs::RobotStateEvent);
     switch(event.state) {
-      case(RobotEvent::Online)  : { msg->state = kmr_msgs::RobotStateEvent::ONLINE;  break; }
-      case(RobotEvent::Offline) : { msg->state = kmr_msgs::RobotStateEvent::OFFLINE; break; }
+      case(RobotEvent::Online)  : { msg->state = kobuki_msgs::RobotStateEvent::ONLINE;  break; }
+      case(RobotEvent::Offline) : { msg->state = kobuki_msgs::RobotStateEvent::OFFLINE; break; }
       default: break;
     }
 

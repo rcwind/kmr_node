@@ -55,22 +55,22 @@
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/Imu.h>
 #include <ecl/sigslots.hpp>
-#include <kmr_msgs/ButtonEvent.h>
-#include <kmr_msgs/BumperEvent.h>
-#include <kmr_msgs/CliffEvent.h>
-#include <kmr_msgs/ControllerInfo.h>
-#include <kmr_msgs/DigitalOutput.h>
-#include <kmr_msgs/DigitalInputEvent.h>
-#include <kmr_msgs/ExternalPower.h>
-#include <kmr_msgs/DockInfraRed.h>
-#include <kmr_msgs/Led.h>
-#include <kmr_msgs/MotorPower.h>
-#include <kmr_msgs/PowerSystemEvent.h>
-#include <kmr_msgs/RobotStateEvent.h>
-#include <kmr_msgs/SensorState.h>
-#include <kmr_msgs/Sound.h>
-#include <kmr_msgs/VersionInfo.h>
-#include <kmr_msgs/WheelDropEvent.h>
+#include <kobuki_msgs/ButtonEvent.h>
+#include <kobuki_msgs/BumperEvent.h>
+#include <kobuki_msgs/CliffEvent.h>
+#include <kobuki_msgs/ControllerInfo.h>
+#include <kobuki_msgs/DigitalOutput.h>
+#include <kobuki_msgs/DigitalInputEvent.h>
+#include <kobuki_msgs/ExternalPower.h>
+#include <kobuki_msgs/DockInfraRed.h>
+#include <kobuki_msgs/Led.h>
+#include <kobuki_msgs/MotorPower.h>
+#include <kobuki_msgs/PowerSystemEvent.h>
+#include <kobuki_msgs/RobotStateEvent.h>
+#include <kobuki_msgs/SensorState.h>
+#include <kobuki_msgs/Sound.h>
+#include <kobuki_msgs/VersionInfo.h>
+#include <kobuki_msgs/WheelDropEvent.h>
 #include <kmr_driver/kmr.hpp>
 #include "diagnostics.hpp"
 #include "odometry.hpp"
@@ -123,14 +123,14 @@ private:
   ** Ros Callbacks
   **********************/
   void subscribeVelocityCommand(const geometry_msgs::TwistConstPtr);
-  void subscribeLed1Command(const kmr_msgs::LedConstPtr);
-  void subscribeLed2Command(const kmr_msgs::LedConstPtr);
-  void subscribeDigitalOutputCommand(const kmr_msgs::DigitalOutputConstPtr);
-  void subscribeExternalPowerCommand(const kmr_msgs::ExternalPowerConstPtr);
+  void subscribeLed1Command(const kobuki_msgs::LedConstPtr);
+  void subscribeLed2Command(const kobuki_msgs::LedConstPtr);
+  void subscribeDigitalOutputCommand(const kobuki_msgs::DigitalOutputConstPtr);
+  void subscribeExternalPowerCommand(const kobuki_msgs::ExternalPowerConstPtr);
   void subscribeResetOdometry(const std_msgs::EmptyConstPtr);
-  void subscribeSoundCommand(const kmr_msgs::SoundConstPtr);
-  void subscribeMotorPower(const kmr_msgs::MotorPowerConstPtr msg);
-  void subscribeControllerInfoCommand(const kmr_msgs::ControllerInfoConstPtr msg);
+  void subscribeSoundCommand(const kobuki_msgs::SoundConstPtr);
+  void subscribeMotorPower(const kobuki_msgs::MotorPowerConstPtr msg);
+  void subscribeControllerInfoCommand(const kobuki_msgs::ControllerInfoConstPtr msg);
 
   /*********************
    ** SigSlots

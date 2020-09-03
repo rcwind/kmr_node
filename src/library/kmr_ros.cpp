@@ -39,7 +39,7 @@
 #include <float.h>
 #include <tf/tf.h>
 #include <ecl/streams/string_stream.hpp>
-#include <kmr_msgs/VersionInfo.h>
+#include <kobuki_msgs/VersionInfo.h>
 #include "kmr_node/kmr_ros.hpp"
 #include <sensor_msgs/PointCloud2.h>
 
@@ -312,17 +312,17 @@ void KmrRos::advertiseTopics(ros::NodeHandle& nh)
   /*********************
   ** Kmr Esoterics
   **********************/
-  version_info_publisher = nh.advertise < kmr_msgs::VersionInfo > ("version_info",  100, true); // latched publisher
-  controller_info_publisher = nh.advertise < kmr_msgs::ControllerInfo > ("controller_info",  100, true); // latched publisher
-  button_event_publisher = nh.advertise < kmr_msgs::ButtonEvent > ("events/button", 100);
-  bumper_event_publisher = nh.advertise < kmr_msgs::BumperEvent > ("events/bumper", 100);
-  cliff_event_publisher  = nh.advertise < kmr_msgs::CliffEvent >  ("events/cliff",  100);
-  wheel_event_publisher  = nh.advertise < kmr_msgs::WheelDropEvent > ("events/wheel_drop", 100);
-  power_event_publisher  = nh.advertise < kmr_msgs::PowerSystemEvent > ("events/power_system", 100);
-  input_event_publisher  = nh.advertise < kmr_msgs::DigitalInputEvent > ("events/digital_input", 100);
-  robot_event_publisher  = nh.advertise < kmr_msgs::RobotStateEvent > ("events/robot_state", 100, true); // also latched
-  sensor_state_publisher = nh.advertise < kmr_msgs::SensorState > ("sensors/core", 100);
-  dock_ir_publisher = nh.advertise < kmr_msgs::DockInfraRed > ("sensors/dock_ir", 100);
+  version_info_publisher = nh.advertise < kobuki_msgs::VersionInfo > ("version_info",  100, true); // latched publisher
+  controller_info_publisher = nh.advertise < kobuki_msgs::ControllerInfo > ("controller_info",  100, true); // latched publisher
+  button_event_publisher = nh.advertise < kobuki_msgs::ButtonEvent > ("events/button", 100);
+  bumper_event_publisher = nh.advertise < kobuki_msgs::BumperEvent > ("events/bumper", 100);
+  cliff_event_publisher  = nh.advertise < kobuki_msgs::CliffEvent >  ("events/cliff",  100);
+  wheel_event_publisher  = nh.advertise < kobuki_msgs::WheelDropEvent > ("events/wheel_drop", 100);
+  power_event_publisher  = nh.advertise < kobuki_msgs::PowerSystemEvent > ("events/power_system", 100);
+  input_event_publisher  = nh.advertise < kobuki_msgs::DigitalInputEvent > ("events/digital_input", 100);
+  robot_event_publisher  = nh.advertise < kobuki_msgs::RobotStateEvent > ("events/robot_state", 100, true); // also latched
+  sensor_state_publisher = nh.advertise < kobuki_msgs::SensorState > ("sensors/core", 100);
+  dock_ir_publisher = nh.advertise < kobuki_msgs::DockInfraRed > ("sensors/dock_ir", 100);
   imu_data_publisher = nh.advertise < sensor_msgs::Imu > ("sensors/imu_data", 100);
   raw_imu_data_publisher = nh.advertise < sensor_msgs::Imu > ("sensors/imu_data_raw", 100);
   raw_ultrasonic_data_publisher = nh.advertise < sensor_msgs::Imu > ("sensors/ultrasonic_data_raw", 100);
