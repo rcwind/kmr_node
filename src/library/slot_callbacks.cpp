@@ -161,7 +161,8 @@ void KmrRos::publishRawInertia()
 
     ros::Time now = ros::Time::now();
     ros::Duration interval(0.01); // Time interval between each sensor reading.
-    const double digit_to_dps = 0.00875; // digit to deg/s ratio, comes from datasheet of 3d gyro[L3G4200D].
+
+    const double digit_to_dps = (2000.0/32768.0); // 0.00875 // digit to deg/s ratio, comes from datasheet of 3d gyro[L3G4200D].
     unsigned int length = data.followed_data_length/3;
     for( unsigned int i=0; i<length; i++) {
       // Each sensor reading has id, that circulate 0 to 255.
@@ -173,10 +174,17 @@ void KmrRos::publishRawInertia()
       // See also https://github.com/yujinrobot/kmr/issues/216
       msg->header.stamp = now - interval * (length-i-1);
 
+#if 0
+      // kobuki
       // Sensing axis of 3d gyro is not match with robot. It is rotated 90 degree counterclockwise about z-axis.
       msg->angular_velocity.x = angles::from_degrees( -digit_to_dps * (short)data.data[i*3+1] );
       msg->angular_velocity.y = angles::from_degrees(  digit_to_dps * (short)data.data[i*3+0] );
       msg->angular_velocity.z = angles::from_degrees(  digit_to_dps * (short)data.data[i*3+2] );
+#else
+      msg->angular_velocity.x = angles::from_degrees( digit_to_dps * (short)data.data[i*3+0] );
+      msg->angular_velocity.y = angles::from_degrees( digit_to_dps * (short)data.data[i*3+1] );
+      msg->angular_velocity.z = angles::from_degrees( digit_to_dps * (short)data.data[i*3+2] );
+#endif
 
       raw_imu_data_publisher.publish(msg);
     }
