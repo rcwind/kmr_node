@@ -86,7 +86,10 @@ bool Odometry::commandTimeout() const {
 
 void Odometry::update(const ecl::LegacyPose2D<double> &pose_update, ecl::linear_algebra::Vector3d &pose_update_rates,
                       double imu_heading, double imu_angular_velocity) {
-  pose *= pose_update;
+  // pose *= pose_update; // Ackerman不能用乘法
+  pose.x(pose.x() + pose_update.x());
+  pose.y(pose.y() + pose_update.y());
+  pose.heading(pose.heading() + pose_update.heading());
 
   if (use_imu_heading == true) {
     // Overwite with gyro heading data
@@ -139,7 +142,7 @@ void Odometry::publishOdometry(const geometry_msgs::Quaternion &odom_quat,
 
   // Velocity
   odom->twist.twist.linear.x = pose_update_rates[0];
-  odom->twist.twist.linear.y = pose_update_rates[1];
+  odom->twist.twist.linear.y = 0;//pose_update_rates[1];
   odom->twist.twist.angular.z = pose_update_rates[2];
 
   // Pose covariance (required by robot_pose_ekf) TODO: publish realistic values
