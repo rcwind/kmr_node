@@ -52,6 +52,7 @@
 #include <std_msgs/Empty.h>
 #include <std_msgs/String.h>
 #include <std_msgs/Int16MultiArray.h>
+#include <std_msgs/Float32MultiArray.h>
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/Imu.h>
 #include <ecl/sigslots.hpp>

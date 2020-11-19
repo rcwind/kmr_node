@@ -325,7 +325,7 @@ void KobukiRos::advertiseTopics(ros::NodeHandle& nh)
   dock_ir_publisher = nh.advertise < kobuki_msgs::DockInfraRed > ("sensors/dock_ir", 100);
   imu_data_publisher = nh.advertise < sensor_msgs::Imu > ("sensors/imu_data", 100);
   raw_imu_data_publisher = nh.advertise < sensor_msgs::Imu > ("sensors/imu_data_raw", 100);
-  raw_ultrasonic_data_publisher = nh.advertise < sensor_msgs::Imu > ("sensors/ultrasonic_data_raw", 100);
+  raw_ultrasonic_data_publisher = nh.advertise < std_msgs::Float32MultiArray> ("sensors/ultrasonic_data_raw", 100);
   ultrasonic_cloud_publisher = nh.advertise<sensor_msgs::PointCloud2> ("sensors/ultrasonic_pointcloud", 100);
   raw_data_command_publisher = nh.advertise< std_msgs::String > ("debug/raw_data_command", 100);
   raw_data_stream_publisher = nh.advertise< std_msgs::String > ("debug/raw_data_stream", 100);
