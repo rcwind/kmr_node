@@ -54,7 +54,6 @@ void KobukiRos::processStreamData() {
   publishInertia();
   publishRawInertia();
   publishUltrasonic();
-  publishRawUltrasonic();
 }
 
 /*****************************************************************************
