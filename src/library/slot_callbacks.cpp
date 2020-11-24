@@ -161,7 +161,8 @@ void KobukiRos::publishRawInertia()
 
     ros::Time now = ros::Time::now();
     ros::Duration interval(0.01); // Time interval between each sensor reading.
-    const double digit_to_dps = 0.00875; // digit to deg/s ratio, comes from datasheet of 3d gyro[L3G4200D].
+
+    const double digit_to_dps = (2000.0/32768.0); // 0.00875 // digit to deg/s ratio, comes from datasheet of 3d gyro[L3G4200D].
     unsigned int length = data.followed_data_length/3;
     for( unsigned int i=0; i<length; i++) {
       // Each sensor reading has id, that circulate 0 to 255.
