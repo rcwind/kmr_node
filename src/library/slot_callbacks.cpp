@@ -198,7 +198,14 @@ void KmrRos::publishUltrasonic()
     // raw data
   if ( ros::ok() && (raw_ultrasonic_data_publisher.getNumSubscribers() > 0) )
   {
-      // raw_ultrasonic_data_publisher.publish(msg);
+    float distance;
+    std_msgs::Float32MultiArrayPtr msg(new std_msgs::Float32MultiArray);
+    for (int i = 0; i < length; ++i) 
+    {
+        distance = data.data[i] / 1000.f; // mm -> m
+        msg->data.push_back(distance);
+    }
+    raw_ultrasonic_data_publisher.publish(msg);
   }
   // point cloud
   if (ros::ok() && ultrasonic_cloud_publisher.getNumSubscribers() > 0)
