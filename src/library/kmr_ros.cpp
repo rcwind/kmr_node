@@ -259,7 +259,7 @@ bool KmrRos::update()
   {
     if ( !cmd_vel_timed_out_ )
     {
-      kmr.setBaseControl(0, 0);
+      kmr.setBaseControl(0, 0, 0);
       cmd_vel_timed_out_ = true;
       ROS_WARN("Kmr : Incoming velocity commands not received for more than %.2f seconds -> zero'ing velocity commands", odometry.timeout().toSec());
     }
