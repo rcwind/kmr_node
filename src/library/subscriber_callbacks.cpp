@@ -62,7 +62,9 @@ void KmrRos::subscribeVelocityCommand(const geometry_msgs::TwistConstPtr msg)
     double v = std::sqrt(pow(msg->linear.x, 2) + pow(msg->linear.y, 2));
     double yaw = 0.0;
 
-    if((msg->linear.x == 0) && (msg->linear.y > 0))
+    if((msg->linear.x == 0) && (msg->linear.y == 0))
+        yaw = 0.0;
+    else if((msg->linear.x == 0) && (msg->linear.y > 0))
         yaw = M_PI / 2;
     else if((msg->linear.x == 0) && (msg->linear.y < 0))
         yaw = -M_PI / 2;
