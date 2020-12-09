@@ -69,12 +69,12 @@ void KmrRos::publishSensorState()
       state.header.stamp = ros::Time::now();
       state.time_stamp = data.time_stamp; // firmware time stamp
       state.bumper = data.bumper;
-      state.wheel_drop = data.wheel_drop;
-      state.cliff = data.cliff;
+      state.wheel_drop = 0;//data.wheel_drop;
+      state.cliff = 0;//data.cliff;
       state.left_encoder = data.left_encoder;
       state.right_encoder = data.right_encoder;
-      state.left_pwm = data.left_pwm;
-      state.right_pwm = data.right_pwm;
+      state.left_pwm = 0;//data.left_pwm;
+      state.right_pwm = 0;//data.right_pwm;
       state.buttons = data.buttons;
       state.charger = data.charger;
       state.battery = data.battery;

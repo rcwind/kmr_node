@@ -285,9 +285,9 @@ bool KmrRos::update()
 
   watchdog_diagnostics.update(is_alive);
   battery_diagnostics.update(kmr.batteryStatus());
-  cliff_diagnostics.update(kmr.getCoreSensorData().cliff, kmr.getCliffData());
+  // cliff_diagnostics.update(kmr.getCoreSensorData().cliff, kmr.getCliffData());
   bumper_diagnostics.update(kmr.getCoreSensorData().bumper);
-  wheel_diagnostics.update(kmr.getCoreSensorData().wheel_drop);
+  // wheel_diagnostics.update(kmr.getCoreSensorData().wheel_drop);
   motor_diagnostics.update(kmr.getCurrentData().current);
   state_diagnostics.update(kmr.isEnabled());
   gyro_diagnostics.update(kmr.getInertiaData().angle);
