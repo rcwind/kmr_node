@@ -38,7 +38,6 @@
  *****************************************************************************/
 
 #include "../../include/kmr_node/kmr_ros.hpp"
-#include <cmath.h>
 
 /*****************************************************************************
  ** Namespaces
@@ -60,7 +59,7 @@ void KmrRos::subscribeVelocityCommand(const geometry_msgs::TwistConstPtr msg)
     //double vx = msg->linear.x;        // in (m/s)
     //double wz = msg->angular.z;       // in (rad/s)
     ROS_DEBUG_STREAM("Kmr : velocity command received [" << msg->linear.x << "],[" << msg->angular.z << "]");
-    double v = std::sqrt(pow(msg->linear.x, 2), pow(msg->linear.y, 2));
+    double v = std::sqrt(pow(msg->linear.x, 2) + pow(msg->linear.y, 2));
     double yaw = std::atan2(msg->linear.y, msg->linear.x);
     kmr.setBaseControl(v, msg->angular.z, yaw);
     odometry.resetTimeout();
