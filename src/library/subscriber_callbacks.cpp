@@ -71,6 +71,9 @@ void KmrRos::subscribeVelocityCommand(const geometry_msgs::TwistConstPtr msg)
     else
         yaw = std::atan2(msg->linear.y, msg->linear.x);
 
+    if(abs(yaw) > M_PI / 2)
+        v = -v;
+
     kmr.setBaseControl(v, msg->angular.z, yaw);
     odometry.resetTimeout();
   }
