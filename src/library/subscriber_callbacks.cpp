@@ -225,6 +225,11 @@ void KmrRos::subscribeMotorPower(const kobuki_msgs::MotorPowerConstPtr msg)
   }
 }
 
+void KmrRos::subscribeDockCommand(const std_msgs::UInt8 msg)
+{
+  kmr.setDock(msg->data);
+  return;
+}
 void KmrRos::subscribeControllerInfoCommand(const kobuki_msgs::ControllerInfoConstPtr msg)
 {
   if( msg->p_gain < 0.0f ||  msg->i_gain < 0.0f ||  msg->d_gain < 0.0f) {
