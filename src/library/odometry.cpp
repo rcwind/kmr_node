@@ -142,7 +142,7 @@ void Odometry::publishOdometry(const geometry_msgs::Quaternion &odom_quat,
 
   // Velocity
   odom->twist.twist.linear.x = pose_update_rates[0];
-  odom->twist.twist.linear.y = 0;//pose_update_rates[1];
+  odom->twist.twist.linear.y = pose_update_rates[1];
   odom->twist.twist.angular.z = pose_update_rates[2];
 
   // Pose covariance (required by robot_pose_ekf) TODO: publish realistic values
