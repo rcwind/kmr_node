@@ -149,6 +149,11 @@ void KmrRos::subscribeExternalPowerCommand(const kobuki_msgs::ExternalPowerConst
   return;
 }
 
+void KmrRos::subscribeMagTracker(const std_msgs::Int32 msg)
+{
+  kmr.setMagTracker(msg.data);
+  return;
+}
 /**
  * @brief Play a predefined sound (single sound or sound sequence)
  */

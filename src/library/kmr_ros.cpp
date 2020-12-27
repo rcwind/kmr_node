@@ -348,6 +348,7 @@ void KmrRos::subscribeTopics(ros::NodeHandle& nh)
   motor_power_subscriber = nh.subscribe("commands/motor_power", 10, &KmrRos::subscribeMotorPower, this);
   controller_info_command_subscriber =  nh.subscribe(std::string("commands/controller_info"), 10, &KmrRos::subscribeControllerInfoCommand, this);
   dock_command_subscriber =  nh.subscribe(std::string("commands/dock"), 10, &KmrRos::subscribeDockCommand, this);
+  mag_tracker_subscriber =  nh.subscribe(std::string("/mag/action"), 10, &KmrRos::subscribeMagTracker, this);
 }
 
 
