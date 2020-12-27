@@ -116,6 +116,7 @@ private:
   ros::Subscriber velocity_command_subscriber, digital_output_command_subscriber, external_power_command_subscriber;
   ros::Subscriber controller_info_command_subscriber;
   ros::Subscriber dock_command_subscriber;
+  ros::Subscriber mag_tracker_subscriber;
   ros::Subscriber led1_command_subscriber, led2_command_subscriber, sound_command_subscriber;
   ros::Subscriber motor_power_subscriber, reset_odometry_subscriber;
 
@@ -135,6 +136,7 @@ private:
   void subscribeMotorPower(const kobuki_msgs::MotorPowerConstPtr msg);
   void subscribeControllerInfoCommand(const kobuki_msgs::ControllerInfoConstPtr msg);
   void subscribeDockCommand(const std_msgs::UInt8 msg);
+  void subscribeMagTracker(const std_msgs::Int32 msg);
 
   /*********************
    ** SigSlots
