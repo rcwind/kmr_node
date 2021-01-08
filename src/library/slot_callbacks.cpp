@@ -211,11 +211,11 @@ void KmrRos::publishUltrasonic()
   if (ros::ok() && ultrasonic_cloud_publisher.getNumSubscribers() > 0)
   {
       std::string base_link_frame;
-      double pointcloud_height, ultrasonic_radius;
-      std::vector<double> angle;
+      double pointcloud_height;
+      std::vector<double> angle, ultrasonic_position;
       node_handle->param("pointcloud_height", pointcloud_height, 0.04);  // kmr_node base.yaml文件定义
       node_handle->param("pointcloud_angle", angle, std::vector<double>()); 
-      node_handle->param("ultrasonic_radius", ultrasonic_radius, 0.2); 
+      node_handle->param("ultrasonic_position", ultrasonic_position, std::vector<double>()); 
       node_handle->param<std::string>("base_frame", base_link_frame, "/base_link");
 
       for(int i = 0; i < angle.size(); i++)
@@ -254,8 +254,8 @@ void KmrRos::publishUltrasonic()
           float x, y, distance;
           distance = data.data[i] / 1000.f; // mm -> m
           // 超声波模块的排布顺序和数据顺序都会影响计算xy的值，请根据实际情况来改
-          x = sin(angle[i]) * (distance + ultrasonic_radius);
-          y = cos(angle[i]) * (distance + ultrasonic_radius);
+          x = sin(angle[i]) * (distance + ultrasonic_position[i]);
+          y = cos(angle[i]) * (distance + ultrasonic_position[i]);
           memcpy(&pointcloud.data[i * pointcloud.point_step + pointcloud.fields[0].offset], &x, sizeof(float));//x
           memcpy(&pointcloud.data[i * pointcloud.point_step + pointcloud.fields[1].offset], &y, sizeof(float));//y
           memcpy(&pointcloud.data[i * pointcloud.point_step + pointcloud.fields[2].offset], &pointcloud_height, sizeof(float));//z

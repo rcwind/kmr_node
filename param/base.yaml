@@ -37,7 +37,7 @@ base_frame: base_footprint
 
 #自定义参数
 pointcloud_height: 0.1
-#超声波排布角度,排布将影响计算方式，请核对代码计算方式
-pointcloud_angle: [0.0, 60.0, 180.0, 240.0]
-#超声波模块安装位置相对于中心点的半径
-ultrasonic_radius: 0.2
+#超声波排布角度,排布将影响计算方式，-180 ~~ +180
+pointcloud_angle: [0.0, 0.0, 0.0, 0.0]
+#超声波模块安装位置相对于中心点的半径，只能正值
+ultrasonic_position: [0.0, 0.0, 0.0, 0.0]
