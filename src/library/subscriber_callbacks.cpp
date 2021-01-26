@@ -152,8 +152,12 @@ void KmrRos::subscribeExternalPowerCommand(const kobuki_msgs::ExternalPowerConst
 void KmrRos::subscribeRelayControl(const std_msgs::Int32 msg)
 {
   unsigned char action = msg.data;
-  if(action == 1)
+  if(action == 0)
+      kmr.setMagTracker(6);
+  else if(action == 1)
       kmr.setMagTracker(4);
+  else if(action == 2)
+      kmr.setMagTracker(5);
   return;
 }
 void KmrRos::subscribeMagTracker(const std_msgs::Int32 msg)
