@@ -347,6 +347,7 @@ void KobukiRos::subscribeTopics(ros::NodeHandle& nh)
   reset_odometry_subscriber = nh.subscribe("commands/reset_odometry", 10, &KobukiRos::subscribeResetOdometry, this);
   motor_power_subscriber = nh.subscribe("commands/motor_power", 10, &KobukiRos::subscribeMotorPower, this);
   controller_info_command_subscriber =  nh.subscribe(std::string("commands/controller_info"), 10, &KobukiRos::subscribeControllerInfoCommand, this);
+  dock_command_subscriber =  nh.subscribe(std::string("commands/dock"), 10, &KobukiRos::subscribeDockCommand, this);
 }
 
 

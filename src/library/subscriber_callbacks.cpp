@@ -225,6 +225,11 @@ void KobukiRos::subscribeMotorPower(const kobuki_msgs::MotorPowerConstPtr msg)
   }
 }
 
+void KobukiRos::subscribeDockCommand(const std_msgs::UInt8 msg)
+{
+  kobuki.setDock(msg.data);
+  return;
+}
 void KobukiRos::subscribeControllerInfoCommand(const kobuki_msgs::ControllerInfoConstPtr msg)
 {
   if( msg->p_gain < 0.0f ||  msg->i_gain < 0.0f ||  msg->d_gain < 0.0f) {
