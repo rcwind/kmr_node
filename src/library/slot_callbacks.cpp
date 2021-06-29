@@ -50,7 +50,6 @@ namespace kobuki
 void KobukiRos::processStreamData() {
   publishWheelState();
   publishSensorState();
-  publishDockIRData();
   publishInertia();
   publishRawInertia();
   publishUltrasonic();
@@ -69,22 +68,10 @@ void KobukiRos::publishSensorState()
       state.header.stamp = ros::Time::now();
       state.time_stamp = data.time_stamp; // firmware time stamp
       state.bumper = data.bumper;
-      state.wheel_drop = data.wheel_drop;
-      state.cliff = data.cliff;
       state.left_encoder = data.left_encoder;
       state.right_encoder = data.right_encoder;
-      state.left_pwm = data.left_pwm;
-      state.right_pwm = data.right_pwm;
-      state.buttons = data.buttons;
       state.charger = data.charger;
       state.battery = data.battery;
-      state.over_current = data.over_current;
-
-      Cliff::Data cliff_data = kobuki.getCliffData();
-      state.bottom = cliff_data.bottom;
-
-      Current::Data current_data = kobuki.getCurrentData();
-      state.current = current_data.current;
 
       GpInput::Data gp_input_data = kobuki.getGpInputData();
       state.digital_input = gp_input_data.digital_input;
@@ -257,29 +244,6 @@ void KobukiRos::publishUltrasonic()
   }
 }
 
-void KobukiRos::publishDockIRData()
-{
-  if (ros::ok())
-  {
-    if (dock_ir_publisher.getNumSubscribers() > 0)
-    {
-      DockIR::Data data = kobuki.getDockIRData();
-
-      // Publish as shared pointer to leverage the nodelets' zero-copy pub/sub feature
-      kobuki_msgs::DockInfraRedPtr msg(new kobuki_msgs::DockInfraRed);
-
-      msg->header.frame_id = "dock_ir_link";
-      msg->header.stamp = ros::Time::now();
-
-      msg->data.push_back( data.docking[0] );
-      msg->data.push_back( data.docking[1] );
-      msg->data.push_back( data.docking[2] );
-
-      dock_ir_publisher.publish(msg);
-    }
-  }
-}
-
 /*****************************************************************************
 ** Non Default Stream Packets
 *****************************************************************************/
@@ -320,46 +284,9 @@ void KobukiRos::publishVersionInfo(const VersionInfo &version_info)
   }
 }
 
-void KobukiRos::publishControllerInfo()
-{
-  if (ros::ok())
-  {
-    kobuki_msgs::ControllerInfoPtr msg(new kobuki_msgs::ControllerInfo);
-    ControllerInfo::Data data = kobuki.getControllerInfoData();
-
-    msg->type = data.type;
-    msg->p_gain = static_cast<float>(data.p_gain) * 0.001f;;
-    msg->i_gain = static_cast<float>(data.i_gain) * 0.001f;;
-    msg->d_gain = static_cast<float>(data.d_gain) * 0.001f;;
-
-    controller_info_publisher.publish(msg);
-  }
-}
-
 /*****************************************************************************
 ** Events
 *****************************************************************************/
-
-void KobukiRos::publishButtonEvent(const ButtonEvent &event)
-{
-  if (ros::ok())
-  {
-    kobuki_msgs::ButtonEventPtr msg(new kobuki_msgs::ButtonEvent);
-    switch(event.state) {
-      case(ButtonEvent::Pressed)  : { msg->state = kobuki_msgs::ButtonEvent::PRESSED;  break; }
-      case(ButtonEvent::Released) : { msg->state = kobuki_msgs::ButtonEvent::RELEASED; break; }
-      default: break;
-    }
-    switch(event.button) {
-      case(ButtonEvent::Button0) : { msg->button = kobuki_msgs::ButtonEvent::Button0; break; }
-      case(ButtonEvent::Button1) : { msg->button = kobuki_msgs::ButtonEvent::Button1; break; }
-      case(ButtonEvent::Button2) : { msg->button = kobuki_msgs::ButtonEvent::Button2; break; }
-      default: break;
-    }
-    button_event_publisher.publish(msg);
-  }
-}
-
 void KobukiRos::publishBumperEvent(const BumperEvent &event)
 {
   if (ros::ok())
@@ -377,46 +304,6 @@ void KobukiRos::publishBumperEvent(const BumperEvent &event)
       default: break;
     }
     bumper_event_publisher.publish(msg);
-  }
-}
-
-void KobukiRos::publishCliffEvent(const CliffEvent &event)
-{
-  if (ros::ok())
-  {
-    kobuki_msgs::CliffEventPtr msg(new kobuki_msgs::CliffEvent);
-    switch(event.state) {
-      case(CliffEvent::Floor) : { msg->state = kobuki_msgs::CliffEvent::FLOOR; break; }
-      case(CliffEvent::Cliff) : { msg->state = kobuki_msgs::CliffEvent::CLIFF; break; }
-      default: break;
-    }
-    switch(event.sensor) {
-      case(CliffEvent::Left)   : { msg->sensor = kobuki_msgs::CliffEvent::LEFT;   break; }
-      case(CliffEvent::Center) : { msg->sensor = kobuki_msgs::CliffEvent::CENTER; break; }
-      case(CliffEvent::Right)  : { msg->sensor = kobuki_msgs::CliffEvent::RIGHT;  break; }
-      default: break;
-    }
-    msg->bottom = event.bottom;
-    cliff_event_publisher.publish(msg);
-  }
-}
-
-void KobukiRos::publishWheelEvent(const WheelEvent &event)
-{
-  if (ros::ok())
-  {
-    kobuki_msgs::WheelDropEventPtr msg(new kobuki_msgs::WheelDropEvent);
-    switch(event.state) {
-      case(WheelEvent::Dropped) : { msg->state = kobuki_msgs::WheelDropEvent::DROPPED; break; }
-      case(WheelEvent::Raised)  : { msg->state = kobuki_msgs::WheelDropEvent::RAISED;  break; }
-      default: break;
-    }
-    switch(event.wheel) {
-      case(WheelEvent::Left)  : { msg->wheel = kobuki_msgs::WheelDropEvent::LEFT;  break; }
-      case(WheelEvent::Right) : { msg->wheel = kobuki_msgs::WheelDropEvent::RIGHT; break; }
-      default: break;
-    }
-    wheel_event_publisher.publish(msg);
   }
 }
 
