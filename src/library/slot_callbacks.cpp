@@ -70,7 +70,8 @@ void KobukiRos::publishSensorState()
       state.bumper = data.bumper;
       state.left_encoder = data.left_encoder;
       state.right_encoder = data.right_encoder;
-      state.charger = data.charger;
+      state.charger_status = data.charger_status;
+      state.charger_current = data.charger_current;
       state.battery = data.battery;
 
       GpInput::Data gp_input_data = kobuki.getGpInputData();
