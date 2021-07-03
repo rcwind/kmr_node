@@ -110,10 +110,10 @@ class MotorCurrentTask : public diagnostic_updater::DiagnosticTask {
 public:
   MotorCurrentTask() : DiagnosticTask("Motor Current") {}
   void run(diagnostic_updater::DiagnosticStatusWrapper &stat);
-  void update(const std::vector<uint8_t> &new_values) { values = new_values; }
+  void update(const std::vector<int16_t> &new_values) { values = new_values; }
 
 private:
-  std::vector<uint8_t> values;
+  std::vector<int16_t> values;
 };
 
 /**

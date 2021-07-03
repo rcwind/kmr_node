@@ -50,9 +50,9 @@ namespace kobuki
 void KobukiRos::processStreamData() {
   publishWheelState();
   publishSensorState();
+  publishUltrasonic();
   publishInertia();
   publishRawInertia();
-  publishUltrasonic();
 }
 
 /*****************************************************************************
@@ -68,11 +68,21 @@ void KobukiRos::publishSensorState()
       state.header.stamp = ros::Time::now();
       state.time_stamp = data.time_stamp; // firmware time stamp
       state.bumper = data.bumper;
+      state.wheel_drop = data.wheel_drop;
+      state.cliff = data.cliff;
       state.left_encoder = data.left_encoder;
       state.right_encoder = data.right_encoder;
-      state.charger_status = data.charger_status;
+      state.buttons = data.buttons;
+      state.charger = data.charger;
       state.charger_current = data.charger_current;
       state.battery = data.battery;
+      state.over_current = data.over_current;
+
+      Cliff::Data cliff_data = kobuki.getCliffData();
+      state.bottom = cliff_data.bottom;
+
+      Current::Data current_data = kobuki.getCurrentData();
+      state.current = current_data.current;
 
       GpInput::Data gp_input_data = kobuki.getGpInputData();
       state.digital_input = gp_input_data.digital_input;
@@ -288,6 +298,27 @@ void KobukiRos::publishVersionInfo(const VersionInfo &version_info)
 /*****************************************************************************
 ** Events
 *****************************************************************************/
+
+void KobukiRos::publishButtonEvent(const ButtonEvent &event)
+{
+  if (ros::ok())
+  {
+    kobuki_msgs::ButtonEventPtr msg(new kobuki_msgs::ButtonEvent);
+    switch(event.state) {
+      case(ButtonEvent::Pressed)  : { msg->state = kobuki_msgs::ButtonEvent::PRESSED;  break; }
+      case(ButtonEvent::Released) : { msg->state = kobuki_msgs::ButtonEvent::RELEASED; break; }
+      default: break;
+    }
+    switch(event.button) {
+      case(ButtonEvent::Button0) : { msg->button = kobuki_msgs::ButtonEvent::Button0; break; }
+      case(ButtonEvent::Button1) : { msg->button = kobuki_msgs::ButtonEvent::Button1; break; }
+      case(ButtonEvent::Button2) : { msg->button = kobuki_msgs::ButtonEvent::Button2; break; }
+      default: break;
+    }
+    button_event_publisher.publish(msg);
+  }
+}
+
 void KobukiRos::publishBumperEvent(const BumperEvent &event)
 {
   if (ros::ok())
@@ -305,6 +336,46 @@ void KobukiRos::publishBumperEvent(const BumperEvent &event)
       default: break;
     }
     bumper_event_publisher.publish(msg);
+  }
+}
+
+void KobukiRos::publishCliffEvent(const CliffEvent &event)
+{
+  if (ros::ok())
+  {
+    kobuki_msgs::CliffEventPtr msg(new kobuki_msgs::CliffEvent);
+    switch(event.state) {
+      case(CliffEvent::Floor) : { msg->state = kobuki_msgs::CliffEvent::FLOOR; break; }
+      case(CliffEvent::Cliff) : { msg->state = kobuki_msgs::CliffEvent::CLIFF; break; }
+      default: break;
+    }
+    switch(event.sensor) {
+      case(CliffEvent::Left)   : { msg->sensor = kobuki_msgs::CliffEvent::LEFT;   break; }
+      case(CliffEvent::Center) : { msg->sensor = kobuki_msgs::CliffEvent::CENTER; break; }
+      case(CliffEvent::Right)  : { msg->sensor = kobuki_msgs::CliffEvent::RIGHT;  break; }
+      default: break;
+    }
+    msg->bottom = event.bottom;
+    cliff_event_publisher.publish(msg);
+  }
+}
+
+void KobukiRos::publishWheelEvent(const WheelEvent &event)
+{
+  if (ros::ok())
+  {
+    kobuki_msgs::WheelDropEventPtr msg(new kobuki_msgs::WheelDropEvent);
+    switch(event.state) {
+      case(WheelEvent::Dropped) : { msg->state = kobuki_msgs::WheelDropEvent::DROPPED; break; }
+      case(WheelEvent::Raised)  : { msg->state = kobuki_msgs::WheelDropEvent::RAISED;  break; }
+      default: break;
+    }
+    switch(event.wheel) {
+      case(WheelEvent::Left)  : { msg->wheel = kobuki_msgs::WheelDropEvent::LEFT;  break; }
+      case(WheelEvent::Right) : { msg->wheel = kobuki_msgs::WheelDropEvent::RIGHT; break; }
+      default: break;
+    }
+    wheel_event_publisher.publish(msg);
   }
 }
 

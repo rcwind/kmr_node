@@ -63,7 +63,10 @@ KobukiRos::KobukiRos(std::string& node_name) :
     name(node_name), cmd_vel_timed_out_(false), serial_timed_out_(false),
     slot_version_info(&KobukiRos::publishVersionInfo, *this),
     slot_stream_data(&KobukiRos::processStreamData, *this),
+    slot_button_event(&KobukiRos::publishButtonEvent, *this),
     slot_bumper_event(&KobukiRos::publishBumperEvent, *this),
+    slot_cliff_event(&KobukiRos::publishCliffEvent, *this),
+    slot_wheel_event(&KobukiRos::publishWheelEvent, *this),
     slot_power_event(&KobukiRos::publishPowerEvent, *this),
     slot_input_event(&KobukiRos::publishInputEvent, *this),
     slot_robot_event(&KobukiRos::publishRobotEvent, *this),
@@ -80,7 +83,9 @@ KobukiRos::KobukiRos(std::string& node_name) :
   updater.add(battery_diagnostics);
   updater.add(watchdog_diagnostics);
   updater.add(bumper_diagnostics);
-  // updater.add(motor_diagnostics);
+  updater.add(cliff_diagnostics);
+  updater.add(wheel_diagnostics);
+  updater.add(motor_diagnostics);
   updater.add(state_diagnostics);
   updater.add(gyro_diagnostics);
   updater.add(dinput_diagnostics);
@@ -110,7 +115,10 @@ bool KobukiRos::init(ros::NodeHandle& nh, ros::NodeHandle& nh_pub)
    **********************/
   slot_stream_data.connect(name + std::string("/stream_data"));
   slot_version_info.connect(name + std::string("/version_info"));
+  slot_button_event.connect(name + std::string("/button_event"));
   slot_bumper_event.connect(name + std::string("/bumper_event"));
+  slot_cliff_event.connect(name + std::string("/cliff_event"));
+  slot_wheel_event.connect(name + std::string("/wheel_event"));
   slot_power_event.connect(name + std::string("/power_event"));
   slot_input_event.connect(name + std::string("/input_event"));
   slot_robot_event.connect(name + std::string("/robot_event"));
@@ -275,8 +283,10 @@ bool KobukiRos::update()
 
   watchdog_diagnostics.update(is_alive);
   battery_diagnostics.update(kobuki.batteryStatus());
+  cliff_diagnostics.update(kobuki.getCoreSensorData().cliff, kobuki.getCliffData());
   bumper_diagnostics.update(kobuki.getCoreSensorData().bumper);
-  // motor_diagnostics.update(kobuki.getCurrentData().current);
+  wheel_diagnostics.update(kobuki.getCoreSensorData().wheel_drop);
+  motor_diagnostics.update(kobuki.getCurrentData().current);
   state_diagnostics.update(kobuki.isEnabled());
   gyro_diagnostics.update(kobuki.getInertiaData().angle);
   dinput_diagnostics.update(kobuki.getGpInputData().digital_input);
@@ -301,7 +311,10 @@ void KobukiRos::advertiseTopics(ros::NodeHandle& nh)
   ** Kobuki Esoterics
   **********************/
   version_info_publisher = nh.advertise < kobuki_msgs::VersionInfo > ("version_info",  100, true); // latched publisher
+  button_event_publisher = nh.advertise < kobuki_msgs::ButtonEvent > ("events/button", 100);
   bumper_event_publisher = nh.advertise < kobuki_msgs::BumperEvent > ("events/bumper", 100);
+  cliff_event_publisher  = nh.advertise < kobuki_msgs::CliffEvent >  ("events/cliff",  100);
+  wheel_event_publisher  = nh.advertise < kobuki_msgs::WheelDropEvent > ("events/wheel_drop", 100);
   power_event_publisher  = nh.advertise < kobuki_msgs::PowerSystemEvent > ("events/power_system", 100);
   input_event_publisher  = nh.advertise < kobuki_msgs::DigitalInputEvent > ("events/digital_input", 100);
   robot_event_publisher  = nh.advertise < kobuki_msgs::RobotStateEvent > ("events/robot_state", 100, true); // also latched

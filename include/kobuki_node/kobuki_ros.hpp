@@ -57,7 +57,9 @@
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/Imu.h>
 #include <ecl/sigslots.hpp>
+#include <kobuki_msgs/ButtonEvent.h>
 #include <kobuki_msgs/BumperEvent.h>
+#include <kobuki_msgs/CliffEvent.h>
 #include <kobuki_msgs/DigitalOutput.h>
 #include <kobuki_msgs/DigitalInputEvent.h>
 #include <kobuki_msgs/ExternalPower.h>
@@ -135,7 +137,10 @@ private:
    **********************/
   ecl::Slot<const VersionInfo&> slot_version_info;
   ecl::Slot<> slot_stream_data;
+  ecl::Slot<const ButtonEvent&> slot_button_event;
   ecl::Slot<const BumperEvent&> slot_bumper_event;
+  ecl::Slot<const CliffEvent&>  slot_cliff_event;
+  ecl::Slot<const WheelEvent&>  slot_wheel_event;
   ecl::Slot<const PowerEvent&>  slot_power_event;
   ecl::Slot<const InputEvent&>  slot_input_event;
   ecl::Slot<const RobotEvent&>  slot_robot_event;
@@ -152,10 +157,13 @@ private:
   void publishWheelState();
   void publishInertia();
   void publishRawInertia();
-  void publishUltrasonic();
   void publishSensorState();
+  void publishUltrasonic();
   void publishVersionInfo(const VersionInfo &version_info);
+  void publishButtonEvent(const ButtonEvent &event);
   void publishBumperEvent(const BumperEvent &event);
+  void publishCliffEvent(const CliffEvent &event);
+  void publishWheelEvent(const WheelEvent &event);
   void publishPowerEvent(const PowerEvent &event);
   void publishInputEvent(const InputEvent &event);
   void publishRobotEvent(const RobotEvent &event);
@@ -195,7 +203,9 @@ private:
   diagnostic_updater::Updater updater;
   BatteryTask     battery_diagnostics;
   WatchdogTask   watchdog_diagnostics;
+  CliffSensorTask   cliff_diagnostics;
   WallSensorTask   bumper_diagnostics;
+  WheelDropTask     wheel_diagnostics;
   MotorCurrentTask  motor_diagnostics;
   MotorStateTask    state_diagnostics;
   GyroSensorTask     gyro_diagnostics;
