@@ -29,11 +29,11 @@
   <build_depend>pluginlib</build_depend>
 
   <!-- Kmr -->
-  <build_depend>kobuki_msgs</build_depend>
+  <build_depend>kmr_msgs</build_depend>
   <build_depend>kmr_driver</build_depend>
-  <build_depend>kobuki_ftdi</build_depend>
-  <build_depend>kobuki_keyop</build_depend>
-  <build_depend>kobuki_safety_controller</build_depend>
+  <!-- <build_depend>kobuki_ftdi</build_depend> -->
+  <!-- <build_depend>kobuki_keyop</build_depend> -->
+  <!-- <build_depend>kobuki_safety_controller</build_depend> -->
 
   <!-- ECL -->
   <build_depend>ecl_exceptions</build_depend>
@@ -62,11 +62,11 @@
 
   <!-- Kmr -->
   <run_depend>kobuki_rapps</run_depend>
-  <run_depend>kobuki_msgs</run_depend>
+  <run_depend>kmr_msgs</run_depend>
   <run_depend>kmr_driver</run_depend>
-  <run_depend>kobuki_ftdi</run_depend>
-  <run_depend>kobuki_keyop</run_depend>
-  <run_depend>kobuki_safety_controller</run_depend>
+  <!-- <run_depend>kobuki_ftdi</run_depend> -->
+  <!-- <run_depend>kobuki_keyop</run_depend> -->
+  <!-- <run_depend>kobuki_safety_controller</run_depend> -->
 
   <!-- ECL -->
   <run_depend>ecl_exceptions</run_depend>

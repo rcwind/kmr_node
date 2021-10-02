@@ -58,39 +58,39 @@ void KmrRos::subscribeVelocityCommand(const geometry_msgs::TwistConstPtr msg)
     // should be global frame and require a transform
     //double vx = msg->linear.x;        // in (m/s)
     //double wz = msg->angular.z;       // in (rad/s)
-    ROS_DEBUG_STREAM("Kmr : velocity command received [" << msg->linear.x << "],[" << msg->angular.z << "]");
-    kmr.setBaseControl(msg->linear.x, msg->angular.z);
+    ROS_DEBUG_STREAM("Kmr : velocity command received [" << msg->linear.x << "],[" << msg->linear.y << "],[" << msg->angular.z << "]");
+    kmr.setBaseControl(msg->linear.x, msg->linear.y, msg->angular.z);
     odometry.resetTimeout();
   }
   return;
 }
 
 
-void KmrRos::subscribeLed1Command(const kobuki_msgs::LedConstPtr msg)
+void KmrRos::subscribeLed1Command(const kmr_msgs::LedConstPtr msg)
 {
   switch( msg->value ) {
-  case kobuki_msgs::Led::GREEN:  kmr.setLed(Led1, Green ); break;
-  case kobuki_msgs::Led::ORANGE: kmr.setLed(Led1, Orange ); break; 
-  case kobuki_msgs::Led::RED:    kmr.setLed(Led1, Red ); break;
-  case kobuki_msgs::Led::BLACK:  kmr.setLed(Led1, Black ); break;
+  case kmr_msgs::Led::GREEN:  kmr.setLed(Led1, Green ); break;
+  case kmr_msgs::Led::ORANGE: kmr.setLed(Led1, Orange ); break; 
+  case kmr_msgs::Led::RED:    kmr.setLed(Led1, Red ); break;
+  case kmr_msgs::Led::BLACK:  kmr.setLed(Led1, Black ); break;
   default: ROS_WARN_STREAM("Kmr : led 1 command value invalid."); break;
   }
   return;
 }
 
-void KmrRos::subscribeLed2Command(const kobuki_msgs::LedConstPtr msg)
+void KmrRos::subscribeLed2Command(const kmr_msgs::LedConstPtr msg)
 {
   switch( msg->value ) {
-  case kobuki_msgs::Led::GREEN:  kmr.setLed(Led2, Green ); break;
-  case kobuki_msgs::Led::ORANGE: kmr.setLed(Led2, Orange ); break;
-  case kobuki_msgs::Led::RED:    kmr.setLed(Led2, Red ); break;
-  case kobuki_msgs::Led::BLACK:  kmr.setLed(Led2, Black ); break;
+  case kmr_msgs::Led::GREEN:  kmr.setLed(Led2, Green ); break;
+  case kmr_msgs::Led::ORANGE: kmr.setLed(Led2, Orange ); break;
+  case kmr_msgs::Led::RED:    kmr.setLed(Led2, Red ); break;
+  case kmr_msgs::Led::BLACK:  kmr.setLed(Led2, Black ); break;
   default: ROS_WARN_STREAM("Kmr : led 2 command value invalid."); break;
   }
   return;
 }
 
-void KmrRos::subscribeDigitalOutputCommand(const kobuki_msgs::DigitalOutputConstPtr msg)
+void KmrRos::subscribeDigitalOutputCommand(const kmr_msgs::DigitalOutputConstPtr msg)
 {
   DigitalOutput digital_output;
   for ( unsigned int i = 0; i < 4; ++i ) {
@@ -101,19 +101,19 @@ void KmrRos::subscribeDigitalOutputCommand(const kobuki_msgs::DigitalOutputConst
   return;
 }
 
-void KmrRos::subscribeExternalPowerCommand(const kobuki_msgs::ExternalPowerConstPtr msg)
+void KmrRos::subscribeExternalPowerCommand(const kmr_msgs::ExternalPowerConstPtr msg)
 {
   // Validate message
-  if (!((msg->source == kobuki_msgs::ExternalPower::PWR_3_3V1A) ||
-        (msg->source == kobuki_msgs::ExternalPower::PWR_5V1A) ||
-        (msg->source == kobuki_msgs::ExternalPower::PWR_12V5A) ||
-        (msg->source == kobuki_msgs::ExternalPower::PWR_12V1_5A)))
+  if (!((msg->source == kmr_msgs::ExternalPower::PWR_3_3V1A) ||
+        (msg->source == kmr_msgs::ExternalPower::PWR_5V1A) ||
+        (msg->source == kmr_msgs::ExternalPower::PWR_12V5A) ||
+        (msg->source == kmr_msgs::ExternalPower::PWR_12V1_5A)))
   {
     ROS_ERROR_STREAM("Kmr : Power source " << (unsigned int)msg->source << " does not exist! [" << name << "].");
     return;
   }
-  if (!((msg->state == kobuki_msgs::ExternalPower::OFF) ||
-      (msg->state == kobuki_msgs::ExternalPower::ON)))
+  if (!((msg->state == kmr_msgs::ExternalPower::OFF) ||
+      (msg->state == kmr_msgs::ExternalPower::ON)))
   {
     ROS_ERROR_STREAM("Kmr : Power source state "
         << (unsigned int)msg->state << " does not exist! [" << name << "].");
@@ -169,33 +169,33 @@ void KmrRos::subscribeMagTracker(const std_msgs::Int32 msg)
 /**
  * @brief Play a predefined sound (single sound or sound sequence)
  */
-void KmrRos::subscribeSoundCommand(const kobuki_msgs::SoundConstPtr msg)
+void KmrRos::subscribeSoundCommand(const kmr_msgs::SoundConstPtr msg)
 {
-  if ( msg->value == kobuki_msgs::Sound::ON )
+  if ( msg->value == kmr_msgs::Sound::ON )
   {
     kmr.playSoundSequence(On);
   }
-  else if ( msg->value == kobuki_msgs::Sound::OFF )
+  else if ( msg->value == kmr_msgs::Sound::OFF )
   {
     kmr.playSoundSequence(Off);
   }
-  else if ( msg->value == kobuki_msgs::Sound::RECHARGE )
+  else if ( msg->value == kmr_msgs::Sound::RECHARGE )
   {
     kmr.playSoundSequence(Recharge);
   }
-  else if ( msg->value == kobuki_msgs::Sound::BUTTON )
+  else if ( msg->value == kmr_msgs::Sound::BUTTON )
   {
     kmr.playSoundSequence(Button);
   }
-  else if ( msg->value == kobuki_msgs::Sound::ERROR )
+  else if ( msg->value == kmr_msgs::Sound::ERROR )
   {
     kmr.playSoundSequence(Error);
   }
-  else if ( msg->value == kobuki_msgs::Sound::CLEANINGSTART )
+  else if ( msg->value == kmr_msgs::Sound::CLEANINGSTART )
   {
     kmr.playSoundSequence(CleaningStart);
   }
-  else if ( msg->value == kobuki_msgs::Sound::CLEANINGEND )
+  else if ( msg->value == kmr_msgs::Sound::CLEANINGEND )
   {
     kmr.playSoundSequence(CleaningEnd);
   }
@@ -221,15 +221,15 @@ void KmrRos::subscribeResetOdometry(const std_msgs::EmptyConstPtr /* msg */)
   return;
 }
 
-void KmrRos::subscribeMotorPower(const kobuki_msgs::MotorPowerConstPtr msg)
+void KmrRos::subscribeMotorPower(const kmr_msgs::MotorPowerConstPtr msg)
 {
-  if (msg->state == kobuki_msgs::MotorPower::ON)
+  if (msg->state == kmr_msgs::MotorPower::ON)
   {
     ROS_INFO_STREAM("Kmr : Firing up the motors. [" << name << "]");
     kmr.enable();
     odometry.resetTimeout();
   }
-  else if (msg->state == kobuki_msgs::MotorPower::OFF)
+  else if (msg->state == kmr_msgs::MotorPower::OFF)
   {
     kmr.disable();
     ROS_INFO_STREAM("Kmr : Shutting down the motors. [" << name << "]");
@@ -245,18 +245,6 @@ void KmrRos::subscribeMotorPower(const kobuki_msgs::MotorPowerConstPtr msg)
 void KmrRos::subscribeDockCommand(const std_msgs::UInt8 msg)
 {
   kmr.setDock(msg.data);
-  return;
-}
-void KmrRos::subscribeControllerInfoCommand(const kobuki_msgs::ControllerInfoConstPtr msg)
-{
-  if( msg->p_gain < 0.0f ||  msg->i_gain < 0.0f ||  msg->d_gain < 0.0f) {
-    ROS_ERROR_STREAM("Kmr : All controller gains should be positive. [" << name << "]");
-    return;
-  }
-  kmr.setControllerGain(msg->type,
-                           static_cast<unsigned int>(msg->p_gain*1000.0f),
-                           static_cast<unsigned int>(msg->i_gain*1000.0f),
-                           static_cast<unsigned int>(msg->d_gain*1000.0f));
   return;
 }
 

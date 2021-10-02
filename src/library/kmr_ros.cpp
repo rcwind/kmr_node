@@ -39,7 +39,7 @@
 #include <float.h>
 #include <tf/tf.h>
 #include <ecl/streams/string_stream.hpp>
-#include <kobuki_msgs/VersionInfo.h>
+#include <kmr_msgs/VersionInfo.h>
 #include "kmr_node/kmr_ros.hpp"
 #include <sensor_msgs/PointCloud2.h>
 
@@ -62,7 +62,6 @@ namespace kmr
 KmrRos::KmrRos(std::string& node_name) :
     name(node_name), cmd_vel_timed_out_(false), serial_timed_out_(false),
     slot_version_info(&KmrRos::publishVersionInfo, *this),
-    slot_controller_info(&KmrRos::publishControllerInfo, *this),
     slot_stream_data(&KmrRos::processStreamData, *this),
     slot_button_event(&KmrRos::publishButtonEvent, *this),
     slot_bumper_event(&KmrRos::publishBumperEvent, *this),
@@ -86,7 +85,6 @@ KmrRos::KmrRos(std::string& node_name) :
   updater.add(bumper_diagnostics);
   updater.add(cliff_diagnostics);
   updater.add(wheel_diagnostics);
-  updater.add(motor_diagnostics);
   updater.add(state_diagnostics);
   updater.add(gyro_diagnostics);
   updater.add(dinput_diagnostics);
@@ -116,7 +114,6 @@ bool KmrRos::init(ros::NodeHandle& nh, ros::NodeHandle& nh_pub)
    **********************/
   slot_stream_data.connect(name + std::string("/stream_data"));
   slot_version_info.connect(name + std::string("/version_info"));
-  slot_controller_info.connect(name + std::string("/controller_info"));
   slot_button_event.connect(name + std::string("/button_event"));
   slot_bumper_event.connect(name + std::string("/bumper_event"));
   slot_cliff_event.connect(name + std::string("/cliff_event"));
@@ -259,7 +256,7 @@ bool KmrRos::update()
   {
     if ( !cmd_vel_timed_out_ )
     {
-      kmr.setBaseControl(0, 0);
+      kmr.setBaseControl(0, 0, 0);
       cmd_vel_timed_out_ = true;
       ROS_WARN("Kmr : Incoming velocity commands not received for more than %.2f seconds -> zero'ing velocity commands", odometry.timeout().toSec());
     }
@@ -288,7 +285,6 @@ bool KmrRos::update()
   cliff_diagnostics.update(kmr.getCoreSensorData().cliff, kmr.getCliffData());
   bumper_diagnostics.update(kmr.getCoreSensorData().bumper);
   wheel_diagnostics.update(kmr.getCoreSensorData().wheel_drop);
-  motor_diagnostics.update(kmr.getCurrentData().current);
   state_diagnostics.update(kmr.isEnabled());
   gyro_diagnostics.update(kmr.getInertiaData().angle);
   dinput_diagnostics.update(kmr.getGpInputData().digital_input);
@@ -312,17 +308,15 @@ void KmrRos::advertiseTopics(ros::NodeHandle& nh)
   /*********************
   ** Kmr Esoterics
   **********************/
-  version_info_publisher = nh.advertise < kobuki_msgs::VersionInfo > ("version_info",  100, true); // latched publisher
-  controller_info_publisher = nh.advertise < kobuki_msgs::ControllerInfo > ("controller_info",  100, true); // latched publisher
-  button_event_publisher = nh.advertise < kobuki_msgs::ButtonEvent > ("events/button", 100);
-  bumper_event_publisher = nh.advertise < kobuki_msgs::BumperEvent > ("events/bumper", 100);
-  cliff_event_publisher  = nh.advertise < kobuki_msgs::CliffEvent >  ("events/cliff",  100);
-  wheel_event_publisher  = nh.advertise < kobuki_msgs::WheelDropEvent > ("events/wheel_drop", 100);
-  power_event_publisher  = nh.advertise < kobuki_msgs::PowerSystemEvent > ("events/power_system", 100);
-  input_event_publisher  = nh.advertise < kobuki_msgs::DigitalInputEvent > ("events/digital_input", 100);
-  robot_event_publisher  = nh.advertise < kobuki_msgs::RobotStateEvent > ("events/robot_state", 100, true); // also latched
-  sensor_state_publisher = nh.advertise < kobuki_msgs::SensorState > ("sensors/core", 100);
-  dock_ir_publisher = nh.advertise < kobuki_msgs::DockInfraRed > ("sensors/dock_ir", 100);
+  version_info_publisher = nh.advertise < kmr_msgs::VersionInfo > ("version_info",  100, true); // latched publisher
+  button_event_publisher = nh.advertise < kmr_msgs::ButtonEvent > ("events/button", 100);
+  bumper_event_publisher = nh.advertise < kmr_msgs::BumperEvent > ("events/bumper", 100);
+  cliff_event_publisher  = nh.advertise < kmr_msgs::CliffEvent >  ("events/cliff",  100);
+  wheel_event_publisher  = nh.advertise < kmr_msgs::WheelDropEvent > ("events/wheel_drop", 100);
+  power_event_publisher  = nh.advertise < kmr_msgs::PowerSystemEvent > ("events/power_system", 100);
+  input_event_publisher  = nh.advertise < kmr_msgs::DigitalInputEvent > ("events/digital_input", 100);
+  robot_event_publisher  = nh.advertise < kmr_msgs::RobotStateEvent > ("events/robot_state", 100, true); // also latched
+  sensor_state_publisher = nh.advertise < kmr_msgs::SensorState > ("sensors/core", 100);
   imu_data_publisher = nh.advertise < sensor_msgs::Imu > ("sensors/imu_data", 100);
   raw_imu_data_publisher = nh.advertise < sensor_msgs::Imu > ("sensors/imu_data_raw", 100);
   raw_ultrasonic_data_publisher = nh.advertise < std_msgs::Float32MultiArray> ("sensors/ultrasonic_data_raw", 100);
@@ -346,7 +340,6 @@ void KmrRos::subscribeTopics(ros::NodeHandle& nh)
   sound_command_subscriber =  nh.subscribe(std::string("commands/sound"), 10, &KmrRos::subscribeSoundCommand, this);
   reset_odometry_subscriber = nh.subscribe("commands/reset_odometry", 10, &KmrRos::subscribeResetOdometry, this);
   motor_power_subscriber = nh.subscribe("commands/motor_power", 10, &KmrRos::subscribeMotorPower, this);
-  controller_info_command_subscriber =  nh.subscribe(std::string("commands/controller_info"), 10, &KmrRos::subscribeControllerInfoCommand, this);
   dock_command_subscriber =  nh.subscribe(std::string("commands/dock"), 10, &KmrRos::subscribeDockCommand, this);
   mag_tracker_subscriber =  nh.subscribe(std::string("/mag/action"), 10, &KmrRos::subscribeMagTracker, this);
   relay_control_subscriber =  nh.subscribe(std::string("/io/relay1"), 10, &KmrRos::subscribeRelayControl, this);

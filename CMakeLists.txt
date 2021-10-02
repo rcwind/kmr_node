@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(kmr_node)
 find_package(catkin REQUIRED COMPONENTS rospy roscpp nodelet pluginlib tf angles
                                         geometry_msgs sensor_msgs nav_msgs std_msgs diagnostic_updater diagnostic_msgs
-                                        kobuki_msgs kmr_driver kobuki_keyop kobuki_safety_controller
+                                        kmr_msgs kmr_driver 
                                         ecl_exceptions ecl_sigslots ecl_streams ecl_threads)
 
 catkin_package(
@@ -10,7 +10,7 @@ catkin_package(
    LIBRARIES kmr_ros kmr_nodelet
    CATKIN_DEPENDS rospy roscpp nodelet pluginlib tf angles
                   geometry_msgs sensor_msgs nav_msgs std_msgs diagnostic_updater diagnostic_msgs
-                  kobuki_msgs kmr_driver kobuki_keyop kobuki_safety_controller
+                  kmr_msgs kmr_driver 
                   ecl_exceptions ecl_sigslots ecl_streams ecl_threads
 )
 

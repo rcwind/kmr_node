@@ -124,17 +124,6 @@ void WheelDropTask::run(diagnostic_updater::DiagnosticStatusWrapper &stat) {
   stat.addf("Right",  status & CoreSensors::Flags::RightWheel?"YES":"NO");
 }
 
-void MotorCurrentTask::run(diagnostic_updater::DiagnosticStatusWrapper &stat) {
-  if ( std::max(values[0], values[1]) > 6 ) { // TODO not sure about this threshold; should be a parameter?
-    stat.summary(diagnostic_msgs::DiagnosticStatus::WARN, "Is robot stalled? Motors current is very high");
-  } else {
-    stat.summary(diagnostic_msgs::DiagnosticStatus::OK, "All right");
-  }
-
-  stat.addf("Left",  "%d", values[0]);
-  stat.addf("Right", "%d", values[1]);
-}
-
 void MotorStateTask::run(diagnostic_updater::DiagnosticStatusWrapper &stat) {
   if ( state == true ) {
     stat.summary(diagnostic_msgs::DiagnosticStatus::OK, "Motors Enabled");

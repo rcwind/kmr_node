@@ -58,22 +58,20 @@
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/Imu.h>
 #include <ecl/sigslots.hpp>
-#include <kobuki_msgs/ButtonEvent.h>
-#include <kobuki_msgs/BumperEvent.h>
-#include <kobuki_msgs/CliffEvent.h>
-#include <kobuki_msgs/ControllerInfo.h>
-#include <kobuki_msgs/DigitalOutput.h>
-#include <kobuki_msgs/DigitalInputEvent.h>
-#include <kobuki_msgs/ExternalPower.h>
-#include <kobuki_msgs/DockInfraRed.h>
-#include <kobuki_msgs/Led.h>
-#include <kobuki_msgs/MotorPower.h>
-#include <kobuki_msgs/PowerSystemEvent.h>
-#include <kobuki_msgs/RobotStateEvent.h>
-#include <kobuki_msgs/SensorState.h>
-#include <kobuki_msgs/Sound.h>
-#include <kobuki_msgs/VersionInfo.h>
-#include <kobuki_msgs/WheelDropEvent.h>
+#include <kmr_msgs/ButtonEvent.h>
+#include <kmr_msgs/BumperEvent.h>
+#include <kmr_msgs/CliffEvent.h>
+#include <kmr_msgs/DigitalOutput.h>
+#include <kmr_msgs/DigitalInputEvent.h>
+#include <kmr_msgs/ExternalPower.h>
+#include <kmr_msgs/Led.h>
+#include <kmr_msgs/MotorPower.h>
+#include <kmr_msgs/PowerSystemEvent.h>
+#include <kmr_msgs/RobotStateEvent.h>
+#include <kmr_msgs/SensorState.h>
+#include <kmr_msgs/Sound.h>
+#include <kmr_msgs/VersionInfo.h>
+#include <kmr_msgs/WheelDropEvent.h>
 #include <kmr_driver/kmr.hpp>
 #include "diagnostics.hpp"
 #include "odometry.hpp"
@@ -108,14 +106,13 @@ private:
   /*********************
    ** Ros Comms
    **********************/
-  ros::Publisher version_info_publisher, controller_info_publisher;
-  ros::Publisher imu_data_publisher, sensor_state_publisher, joint_state_publisher, dock_ir_publisher, raw_imu_data_publisher, raw_ultrasonic_data_publisher, ultrasonic_cloud_publisher;
+  ros::Publisher version_info_publisher;
+  ros::Publisher imu_data_publisher, sensor_state_publisher, joint_state_publisher, raw_imu_data_publisher, raw_ultrasonic_data_publisher, ultrasonic_cloud_publisher;
   ros::Publisher button_event_publisher, input_event_publisher, robot_event_publisher;
   ros::Publisher bumper_event_publisher, cliff_event_publisher, wheel_event_publisher, power_event_publisher;
   ros::Publisher raw_data_command_publisher, raw_data_stream_publisher, raw_control_command_publisher;
 
   ros::Subscriber velocity_command_subscriber, digital_output_command_subscriber, external_power_command_subscriber;
-  ros::Subscriber controller_info_command_subscriber;
   ros::Subscriber dock_command_subscriber;
   ros::Subscriber mag_tracker_subscriber;
   ros::Subscriber relay_control_subscriber;
@@ -129,14 +126,13 @@ private:
   ** Ros Callbacks
   **********************/
   void subscribeVelocityCommand(const geometry_msgs::TwistConstPtr);
-  void subscribeLed1Command(const kobuki_msgs::LedConstPtr);
-  void subscribeLed2Command(const kobuki_msgs::LedConstPtr);
-  void subscribeDigitalOutputCommand(const kobuki_msgs::DigitalOutputConstPtr);
-  void subscribeExternalPowerCommand(const kobuki_msgs::ExternalPowerConstPtr);
+  void subscribeLed1Command(const kmr_msgs::LedConstPtr);
+  void subscribeLed2Command(const kmr_msgs::LedConstPtr);
+  void subscribeDigitalOutputCommand(const kmr_msgs::DigitalOutputConstPtr);
+  void subscribeExternalPowerCommand(const kmr_msgs::ExternalPowerConstPtr);
   void subscribeResetOdometry(const std_msgs::EmptyConstPtr);
-  void subscribeSoundCommand(const kobuki_msgs::SoundConstPtr);
-  void subscribeMotorPower(const kobuki_msgs::MotorPowerConstPtr msg);
-  void subscribeControllerInfoCommand(const kobuki_msgs::ControllerInfoConstPtr msg);
+  void subscribeSoundCommand(const kmr_msgs::SoundConstPtr);
+  void subscribeMotorPower(const kmr_msgs::MotorPowerConstPtr msg);
   void subscribeDockCommand(const std_msgs::UInt8 msg);
   void subscribeMagTracker(const std_msgs::Int32 msg);
   void subscribeRelayControl(const std_msgs::Int32 msg);
@@ -146,7 +142,6 @@ private:
    **********************/
   ecl::Slot<const VersionInfo&> slot_version_info;
   ecl::Slot<> slot_stream_data;
-  ecl::Slot<> slot_controller_info;
   ecl::Slot<const ButtonEvent&> slot_button_event;
   ecl::Slot<const BumperEvent&> slot_bumper_event;
   ecl::Slot<const CliffEvent&>  slot_cliff_event;
@@ -171,7 +166,6 @@ private:
   void publishSensorState();
   void publishDockIRData();
   void publishVersionInfo(const VersionInfo &version_info);
-  void publishControllerInfo();
   void publishButtonEvent(const ButtonEvent &event);
   void publishBumperEvent(const BumperEvent &event);
   void publishCliffEvent(const CliffEvent &event);
@@ -218,7 +212,6 @@ private:
   CliffSensorTask   cliff_diagnostics;
   WallSensorTask   bumper_diagnostics;
   WheelDropTask     wheel_diagnostics;
-  MotorCurrentTask  motor_diagnostics;
   MotorStateTask    state_diagnostics;
   GyroSensorTask     gyro_diagnostics;
   DigitalInputTask dinput_diagnostics;
