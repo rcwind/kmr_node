@@ -5,8 +5,10 @@
 device_port: /dev/kmr
 
 # published joint states
-wheel_left_joint_name: wheel_left_joint
-wheel_right_joint_name: wheel_right_joint
+wheel_left_front_joint_name: wheel_left_front_joint
+wheel_right_front_joint_name: wheel_right_front_joint
+wheel_left_rear_joint_name: wheel_left_rear_joint
+wheel_right_rear_joint_name: wheel_right_rear_joint
 
 # battery voltage at full charge (100%) (float, default: 16.5)
 battery_capacity: 16.5

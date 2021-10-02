@@ -183,10 +183,6 @@ void KmrRos::subscribeSoundCommand(const kmr_msgs::SoundConstPtr msg)
   {
     kmr.playSoundSequence(Recharge);
   }
-  else if ( msg->value == kmr_msgs::Sound::BUTTON )
-  {
-    kmr.playSoundSequence(Button);
-  }
   else if ( msg->value == kmr_msgs::Sound::ERROR )
   {
     kmr.playSoundSequence(Error);
@@ -212,10 +208,14 @@ void KmrRos::subscribeSoundCommand(const kmr_msgs::SoundConstPtr msg)
 void KmrRos::subscribeResetOdometry(const std_msgs::EmptyConstPtr /* msg */)
 {
   ROS_INFO_STREAM("Kmr : Resetting the odometry. [" << name << "].");
-  joint_states.position[0] = 0.0; // wheel_left
+  joint_states.position[0] = 0.0; // wheel_left front
   joint_states.velocity[0] = 0.0;
-  joint_states.position[1] = 0.0; // wheel_right
+  joint_states.position[1] = 0.0; // wheel_right front
   joint_states.velocity[1] = 0.0;
+  joint_states.position[2] = 0.0; // wheel_left rear
+  joint_states.velocity[2] = 0.0;
+  joint_states.position[3] = 0.0; // wheel_right rear
+  joint_states.velocity[3] = 0.0;
   odometry.resetOdometry();
   kmr.resetOdometry();
   return;

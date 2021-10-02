@@ -63,7 +63,6 @@ KmrRos::KmrRos(std::string& node_name) :
     name(node_name), cmd_vel_timed_out_(false), serial_timed_out_(false),
     slot_version_info(&KmrRos::publishVersionInfo, *this),
     slot_stream_data(&KmrRos::processStreamData, *this),
-    slot_button_event(&KmrRos::publishButtonEvent, *this),
     slot_bumper_event(&KmrRos::publishBumperEvent, *this),
     slot_cliff_event(&KmrRos::publishCliffEvent, *this),
     slot_wheel_event(&KmrRos::publishWheelEvent, *this),
@@ -114,7 +113,6 @@ bool KmrRos::init(ros::NodeHandle& nh, ros::NodeHandle& nh_pub)
    **********************/
   slot_stream_data.connect(name + std::string("/stream_data"));
   slot_version_info.connect(name + std::string("/version_info"));
-  slot_button_event.connect(name + std::string("/button_event"));
   slot_bumper_event.connect(name + std::string("/bumper_event"));
   slot_cliff_event.connect(name + std::string("/cliff_event"));
   slot_wheel_event.connect(name + std::string("/wheel_event"));
@@ -150,10 +148,13 @@ bool KmrRos::init(ros::NodeHandle& nh, ros::NodeHandle& nh_pub)
   /*********************
    ** Joint States
    **********************/
-  std::string robot_description, wheel_left_joint_name, wheel_right_joint_name;
+  std::string robot_description, wheel_left_front_joint_name, wheel_right_front_joint_name,
+      wheel_left_rear_joint_name, wheel_right_rear_joint_name;
 
-  nh.param("wheel_left_joint_name", wheel_left_joint_name, std::string("wheel_left_joint"));
-  nh.param("wheel_right_joint_name", wheel_right_joint_name, std::string("wheel_right_joint"));
+  nh.param("wheel_left_front_joint_name", wheel_left_front_joint_name, std::string("wheel_left_front_joint"));
+  nh.param("wheel_right_front_joint_name", wheel_right_front_joint_name, std::string("wheel_right_front_joint"));
+  nh.param("wheel_left_rear_joint_name", wheel_left_rear_joint_name, std::string("wheel_left_rear_joint"));
+  nh.param("wheel_right_rear_joint_name", wheel_right_rear_joint_name, std::string("wheel_right_rear_joint"));
 
   // minimalistic check: are joint names present on robot description file?
   if (!nh_pub.getParam("robot_description", robot_description))
@@ -162,19 +163,21 @@ bool KmrRos::init(ros::NodeHandle& nh, ros::NodeHandle& nh_pub)
   }
   else
   {
-    if (robot_description.find(wheel_left_joint_name) == std::string::npos) {
-      ROS_WARN("Kmr : joint name %s not found on robot description", wheel_left_joint_name.c_str());
+    if (robot_description.find(wheel_left_front_joint_name) == std::string::npos) {
+      ROS_WARN("Kmr : joint name %s not found on robot description", wheel_left_front_joint_name.c_str());
     }
 
-    if (robot_description.find(wheel_right_joint_name) == std::string::npos) {
-      ROS_WARN("Kmr : joint name %s not found on robot description", wheel_right_joint_name.c_str());
+    if (robot_description.find(wheel_right_front_joint_name) == std::string::npos) {
+      ROS_WARN("Kmr : joint name %s not found on robot description", wheel_right_front_joint_name.c_str());
     }
   }
-  joint_states.name.push_back(wheel_left_joint_name);
-  joint_states.name.push_back(wheel_right_joint_name);
-  joint_states.position.resize(2,0.0);
-  joint_states.velocity.resize(2,0.0);
-  joint_states.effort.resize(2,0.0);
+  joint_states.name.push_back(wheel_left_front_joint_name);
+  joint_states.name.push_back(wheel_right_front_joint_name);
+  joint_states.name.push_back(wheel_left_rear_joint_name);
+  joint_states.name.push_back(wheel_right_rear_joint_name);
+  joint_states.position.resize(4,0.0);
+  joint_states.velocity.resize(4,0.0);
+  joint_states.effort.resize(4,0.0);
 
   /*********************
    ** Validation
@@ -309,7 +312,6 @@ void KmrRos::advertiseTopics(ros::NodeHandle& nh)
   ** Kmr Esoterics
   **********************/
   version_info_publisher = nh.advertise < kmr_msgs::VersionInfo > ("version_info",  100, true); // latched publisher
-  button_event_publisher = nh.advertise < kmr_msgs::ButtonEvent > ("events/button", 100);
   bumper_event_publisher = nh.advertise < kmr_msgs::BumperEvent > ("events/bumper", 100);
   cliff_event_publisher  = nh.advertise < kmr_msgs::CliffEvent >  ("events/cliff",  100);
   wheel_event_publisher  = nh.advertise < kmr_msgs::WheelDropEvent > ("events/wheel_drop", 100);

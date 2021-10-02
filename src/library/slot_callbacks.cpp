@@ -50,7 +50,6 @@ namespace kmr
 void KmrRos::processStreamData() {
   publishWheelState();
   publishSensorState();
-  publishDockIRData();
   publishInertia();
   publishRawInertia();
   publishUltrasonic();
@@ -63,18 +62,24 @@ void KmrRos::processStreamData() {
 void KmrRos::publishSensorState()
 {
   if ( ros::ok() ) {
+    CoreSensors::Data data = kmr.getCoreSensorData();
+    if((data.vehicle < 1) || (data.vehicle > 7))
+      ROS_ERROR_STREAM("unkown vehicle type: " << data.vehicle);
+
     if (sensor_state_publisher.getNumSubscribers() > 0) {
       kmr_msgs::SensorState state;
-      CoreSensors::Data data = kmr.getCoreSensorData();
       state.header.stamp = ros::Time::now();
       state.time_stamp = data.time_stamp; // firmware time stamp
+      state.vehicle = data.vehicle;
       state.bumper = data.bumper;
       state.wheel_drop = data.wheel_drop;
       state.cliff = data.cliff;
-      state.left_encoder = data.left_encoder;
-      state.right_encoder = data.right_encoder;
-      state.buttons = data.buttons;
-      state.charger = data.charger;
+      state.left_front_encoder = data.left_front_encoder;
+      state.right_front_encoder = data.right_front_encoder;
+      state.left_rear_encoder = data.left_rear_encoder;
+      state.right_rear_encoder = data.right_rear_encoder;
+      state.charger_status = data.charger_status;
+      state.charger_current = data.charger_current;
       state.battery = data.battery;
 
       Cliff::Data cliff_data = kmr.getCliffData();
@@ -97,8 +102,11 @@ void KmrRos::publishWheelState()
   ecl::LegacyPose2D<double> pose_update;
   ecl::linear_algebra::Vector3d pose_update_rates;
   kmr.updateOdometry(pose_update, pose_update_rates);
-  kmr.getWheelJointStates(joint_states.position[0], joint_states.velocity[0],   // left wheel
-                             joint_states.position[1], joint_states.velocity[1]);  // right wheel
+  kmr.getWheelJointStates(
+      joint_states.position[0], joint_states.velocity[0],  // left front wheel
+      joint_states.position[1], joint_states.velocity[1], // right front wheel
+      joint_states.position[2], joint_states.velocity[2], // left rear wheel
+      joint_states.position[3], joint_states.velocity[3]); // right rear wheel
 
   // Update and publish odometry and joint states
   odometry.update(pose_update, pose_update_rates, kmr.getHeading(), kmr.getAngularVelocity());
@@ -302,26 +310,6 @@ void KmrRos::publishVersionInfo(const VersionInfo &version_info)
 /*****************************************************************************
 ** Events
 *****************************************************************************/
-
-void KmrRos::publishButtonEvent(const ButtonEvent &event)
-{
-  if (ros::ok())
-  {
-    kmr_msgs::ButtonEventPtr msg(new kmr_msgs::ButtonEvent);
-    switch(event.state) {
-      case(ButtonEvent::Pressed)  : { msg->state = kmr_msgs::ButtonEvent::PRESSED;  break; }
-      case(ButtonEvent::Released) : { msg->state = kmr_msgs::ButtonEvent::RELEASED; break; }
-      default: break;
-    }
-    switch(event.button) {
-      case(ButtonEvent::Button0) : { msg->button = kmr_msgs::ButtonEvent::Button0; break; }
-      case(ButtonEvent::Button1) : { msg->button = kmr_msgs::ButtonEvent::Button1; break; }
-      case(ButtonEvent::Button2) : { msg->button = kmr_msgs::ButtonEvent::Button2; break; }
-      default: break;
-    }
-    button_event_publisher.publish(msg);
-  }
-}
 
 void KmrRos::publishBumperEvent(const BumperEvent &event)
 {
