@@ -115,7 +115,7 @@ private:
   ros::Subscriber dock_command_subscriber;
   ros::Subscriber mag_tracker_subscriber;
   ros::Subscriber relay_control_subscriber;
-  ros::Subscriber led1_command_subscriber, led2_command_subscriber, sound_command_subscriber;
+  ros::Subscriber led_command_subscriber, sound_command_subscriber;
   ros::Subscriber motor_power_subscriber, reset_odometry_subscriber;
 
   void advertiseTopics(ros::NodeHandle& nh);
@@ -125,8 +125,7 @@ private:
   ** Ros Callbacks
   **********************/
   void subscribeVelocityCommand(const geometry_msgs::TwistConstPtr);
-  void subscribeLed1Command(const kmr_msgs::LedConstPtr);
-  void subscribeLed2Command(const kmr_msgs::LedConstPtr);
+  void subscribeLedCommand(const kmr_msgs::LedConstPtr);
   void subscribeDigitalOutputCommand(const kmr_msgs::DigitalOutputConstPtr);
   void subscribeExternalPowerCommand(const kmr_msgs::ExternalPowerConstPtr);
   void subscribeResetOdometry(const std_msgs::EmptyConstPtr);

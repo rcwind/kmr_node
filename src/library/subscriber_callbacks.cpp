@@ -66,29 +66,16 @@ void KmrRos::subscribeVelocityCommand(const geometry_msgs::TwistConstPtr msg)
 }
 
 
-void KmrRos::subscribeLed1Command(const kmr_msgs::LedConstPtr msg)
+void KmrRos::subscribeLedCommand(const kmr_msgs::LedConstPtr msg)
 {
-  switch( msg->value ) {
-  case kmr_msgs::Led::GREEN:  kmr.setLed(Led1, Green ); break;
-  case kmr_msgs::Led::ORANGE: kmr.setLed(Led1, Orange ); break; 
-  case kmr_msgs::Led::RED:    kmr.setLed(Led1, Red ); break;
-  case kmr_msgs::Led::BLACK:  kmr.setLed(Led1, Black ); break;
-  default: ROS_WARN_STREAM("Kmr : led 1 command value invalid."); break;
-  }
+  unsigned char color[3];
+  color[0] = msg->red;
+  color[1] = msg->green;
+  color[2] = msg->blue;
+  kmr.setLed(msg->index, msg->count, color);
   return;
 }
 
-void KmrRos::subscribeLed2Command(const kmr_msgs::LedConstPtr msg)
-{
-  switch( msg->value ) {
-  case kmr_msgs::Led::GREEN:  kmr.setLed(Led2, Green ); break;
-  case kmr_msgs::Led::ORANGE: kmr.setLed(Led2, Orange ); break;
-  case kmr_msgs::Led::RED:    kmr.setLed(Led2, Red ); break;
-  case kmr_msgs::Led::BLACK:  kmr.setLed(Led2, Black ); break;
-  default: ROS_WARN_STREAM("Kmr : led 2 command value invalid."); break;
-  }
-  return;
-}
 
 void KmrRos::subscribeDigitalOutputCommand(const kmr_msgs::DigitalOutputConstPtr msg)
 {

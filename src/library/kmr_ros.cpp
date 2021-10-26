@@ -335,8 +335,7 @@ void KmrRos::advertiseTopics(ros::NodeHandle& nh)
 void KmrRos::subscribeTopics(ros::NodeHandle& nh)
 {
   velocity_command_subscriber = nh.subscribe(std::string("commands/velocity"), 10, &KmrRos::subscribeVelocityCommand, this);
-  led1_command_subscriber =  nh.subscribe(std::string("commands/led1"), 10, &KmrRos::subscribeLed1Command, this);
-  led2_command_subscriber =  nh.subscribe(std::string("commands/led2"), 10, &KmrRos::subscribeLed2Command, this);
+  led_command_subscriber =  nh.subscribe(std::string("commands/led"), 10, &KmrRos::subscribeLedCommand, this);
   digital_output_command_subscriber =  nh.subscribe(std::string("commands/digital_output"), 10, &KmrRos::subscribeDigitalOutputCommand, this);
   external_power_command_subscriber =  nh.subscribe(std::string("commands/external_power"), 10, &KmrRos::subscribeExternalPowerCommand, this);
   sound_command_subscriber =  nh.subscribe(std::string("commands/sound"), 10, &KmrRos::subscribeSoundCommand, this);
