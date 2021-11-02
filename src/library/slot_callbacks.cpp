@@ -53,6 +53,7 @@ void KmrRos::processStreamData() {
   publishInertia();
   publishRawInertia();
   publishUltrasonic();
+  publishSteering();
 }
 
 /*****************************************************************************
@@ -193,6 +194,23 @@ void KmrRos::publishRawInertia()
   }
 }
 
+void KmrRos::publishSteering()
+{
+    Steering::Data data = kmr.getSteeringData();
+    unsigned int length = data.followed_data_length;
+    // raw data
+  if ( ros::ok() && (steering_data_publisher.getNumSubscribers() > 0) )
+  {
+    float steering;
+    std_msgs::Float32MultiArrayPtr msg(new std_msgs::Float32MultiArray);
+    for (int i = 0; i < length; ++i) 
+    {
+        steering = data.data[i] / 1000.f; // 0.001deg -> deg
+        msg->data.push_back(steering);
+    }
+    steering_data_publisher.publish(msg);
+  }
+}
 void KmrRos::publishUltrasonic()
 {
     Ultrasonic::Data data = kmr.getUltrasonicData();

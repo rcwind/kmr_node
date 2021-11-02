@@ -107,6 +107,7 @@ private:
    **********************/
   ros::Publisher version_info_publisher;
   ros::Publisher imu_data_publisher, sensor_state_publisher, joint_state_publisher, raw_imu_data_publisher, raw_ultrasonic_data_publisher, ultrasonic_cloud_publisher;
+  ros::Publisher steering_data_publisher;
   ros::Publisher input_event_publisher, robot_event_publisher;
   ros::Publisher bumper_event_publisher, cliff_event_publisher, wheel_event_publisher, power_event_publisher;
   ros::Publisher raw_data_command_publisher, raw_data_stream_publisher, raw_control_command_publisher;
@@ -160,6 +161,7 @@ private:
   void publishInertia();
   void publishRawInertia();
   void publishUltrasonic();
+  void publishSteering();
   void publishSensorState();
   void publishVersionInfo(const VersionInfo &version_info);
   void publishBumperEvent(const BumperEvent &event);
